@@ -1,4 +1,4 @@
-import { Home, ShoppingCart, Package } from "lucide-react";
+import { ShoppingCart, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
 
@@ -11,7 +11,11 @@ function Navbar() {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <Link to={"/"}>
             <div className="flex items-center space-x-3 cursor-pointer group">
-              <Home className="w-8 h-8 text-orange-400 drop-shadow-lg group-hover:scale-110 transition-transform duration-200" />
+              <img
+                src="/favicon.svg"
+                alt="Tech Store Logo"
+                className="w-8 h-8 drop-shadow-[0_0_8px_rgba(249,115,22,0.5)] group-hover:scale-110 transition-transform duration-200"
+              />
               <h1 className="text-3xl md:text-4xl font-extrabold tracking-wider uppercase font-sans">
                 Tech <span className="text-orange-400 group-hover:text-orange-300 transition-colors duration-200">Store</span>
               </h1>

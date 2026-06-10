@@ -1,4 +1,4 @@
-import { Home, Mail, ShieldCheck, Truck, RefreshCw } from "lucide-react";
+import { Mail, ShieldCheck, Truck, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -49,7 +49,11 @@ const Footer = () => {
         <div className="space-y-4">
           <Link to="/">
             <div className="flex items-center space-x-3 text-white">
-              <Home className="w-7 h-7 text-orange-400" />
+              <img
+                src="/favicon.svg"
+                alt="Tech Store Logo"
+                className="w-7 h-7 drop-shadow-[0_0_6px_rgba(249,115,22,0.4)]"
+              />
               <span className="text-2xl font-extrabold uppercase tracking-wider font-sans">
                 Tech <span className="text-orange-400">Store</span>
               </span>
