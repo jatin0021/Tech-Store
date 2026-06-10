@@ -71,23 +71,23 @@ const Footer = () => {
           </h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/?category=laptops" className="hover:text-orange-400 transition-colors duration-150">
-                Laptops & Workstations
+              <Link to="/?category=laptops#catalog" className="hover:text-orange-400 transition-colors duration-150">
+                Laptops &amp; Workstations
               </Link>
             </li>
             <li>
-              <Link to="/?category=smartphones" className="hover:text-orange-400 transition-colors duration-150">
-                Cellular Foldables & Phones
+              <Link to="/?category=smartphones#catalog" className="hover:text-orange-400 transition-colors duration-150">
+                Cellular Foldables &amp; Phones
               </Link>
             </li>
             <li>
-              <Link to="/?category=gaming" className="hover:text-orange-400 transition-colors duration-150">
-                Gaming Graphics & Gear
+              <Link to="/?category=gaming#catalog" className="hover:text-orange-400 transition-colors duration-150">
+                Gaming Graphics &amp; Gear
               </Link>
             </li>
             <li>
-              <Link to="/?category=audio" className="hover:text-orange-400 transition-colors duration-150">
-                Audiophile Nodes & Earbuds
+              <Link to="/?category=audio#catalog" className="hover:text-orange-400 transition-colors duration-150">
+                Audiophile Nodes &amp; Earbuds
               </Link>
             </li>
           </ul>
@@ -100,24 +100,29 @@ const Footer = () => {
           </h3>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="hover:text-orange-400 transition-colors duration-150">
+              <Link to="/help" className="hover:text-orange-400 transition-colors duration-150">
+                Help &amp; Support Core
+              </Link>
+            </li>
+            <li>
+              <Link to="/help#diagnostics" className="hover:text-orange-400 transition-colors duration-150">
                 Terminal Diagnostics
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400 transition-colors duration-150">
-                Delivery Nodes & Rates
-              </a>
+              <Link to="/help#delivery" className="hover:text-orange-400 transition-colors duration-150">
+                Delivery Nodes &amp; Rates
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400 transition-colors duration-150">
+              <Link to="/help#rma" className="hover:text-orange-400 transition-colors duration-150">
                 RMA Authorization
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-orange-400 transition-colors duration-150">
-                Matrix Network Status
-              </a>
+              <Link to="/privacy" className="hover:text-orange-400 transition-colors duration-150">
+                Security &amp; Privacy Policy
+              </Link>
             </li>
           </ul>
         </div>

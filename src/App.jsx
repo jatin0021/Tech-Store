@@ -6,6 +6,8 @@ import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import OrderConfirmation from "./pages/OrderConfirmation.jsx";
 import Orders from "./pages/Orders.jsx";
+import Help from "./pages/Help.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Footer from "./components/Footer.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx";
 import { CartProvider } from "./context/CartContext.jsx";
@@ -25,6 +27,8 @@ function App() {
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
             </Routes>
           </main>
           <Footer />

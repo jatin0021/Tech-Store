@@ -99,7 +99,7 @@ const ProductList = () => {
       </section>
 
       {/* 3. Main Catalog Shop Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div id="catalog" className="grid grid-cols-1 lg:grid-cols-4 gap-8 scroll-mt-24">
         
         {/* Sidebar Controllers */}
         <aside className="lg:col-span-1">
