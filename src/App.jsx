@@ -2,27 +2,37 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProductList from "./pages/ProductList.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
-import Cart from "./pages/Cart.jsx"
-import Checkout from "./pages/Checkout.jsx"
-import Footer from "./components/Footer.jsx"
+import Cart from "./pages/Cart.jsx";
+import Checkout from "./pages/Checkout.jsx";
+import OrderConfirmation from "./pages/OrderConfirmation.jsx";
+import Orders from "./pages/Orders.jsx";
+import Footer from "./components/Footer.jsx";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+import { CartProvider } from "./context/CartContext.jsx";
 
 function App() {
   return (
-    <>
+    <CartProvider>
       <Router>
-        <div className="min-h-screen bg-gray-950">
+        <ScrollToTop />
+        <div className="min-h-screen bg-gray-950 flex flex-col text-white font-sans">
           <Navbar />
-          <Routes>
-            <Route path="/" element={<ProductList />} />
-            <Route path="/product/:id" element={<ProductDetails />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-          </Routes>
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/" element={<ProductList />} />
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/orders" element={<Orders />} />
+            </Routes>
+          </main>
           <Footer />
         </div>
       </Router>
-    </>
+    </CartProvider>
   );
 }
 
 export default App;
+
