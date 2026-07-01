@@ -1,39 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext.jsx";
-import { ArrowLeft, ArrowRight, ShieldCheck, CreditCard, Terminal, HelpCircle } from "lucide-react";
+import { useAuth } from "../context/AuthContext.jsx";
+import apiClient from "../api/api.js";
+import toast from "react-hot-toast";
+import { ArrowLeft, ShieldCheck, Terminal, ShoppingBag } from "lucide-react";
 
 const Checkout = () => {
   const { cart, cartSubtotal } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // Retrieve carrying discount rate from Cart page
   const discountRate = location.state?.discountRate || 0;
 
-  // Checkout Step
-  const [step, setStep] = useState(1); // 1 = Shipping, 2 = Payment
-
   // Shipping Form State
   const [shippingData, setShippingData] = useState({
-    email: "",
     name: "",
+    phone: "",
     address: "",
     city: "",
-    zipCode: "",
-    country: "United States",
+    state: "",
+    pincode: "",
   });
 
-  // Payment Form State
-  const [paymentData, setPaymentData] = useState({
-    cardName: "",
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-  });
-
-  // Form Validation Errors State
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+
+  // Prepopulate form fields if user records are available
+  useEffect(() => {
+    if (user) {
+      setShippingData({
+        name: user.name || "",
+        phone: user.phone || "",
+        address: user.address?.street || "",
+        city: user.address?.city || "",
+        state: user.address?.state || "",
+        pincode: user.address?.pincode || "",
+      });
+    }
+  }, [user]);
 
   // Calculations
   const shippingCost = cartSubtotal >= 500 ? 0 : cartSubtotal > 0 ? 15.00 : 0;
@@ -49,8 +56,7 @@ const Checkout = () => {
     }).format(amount);
   };
 
-  // Form Handlers
-  const handleShippingChange = (e) => {
+  const handleInputChange = (e) => {
     setShippingData({
       ...shippingData,
       [e.target.name]: e.target.value,
@@ -61,120 +67,79 @@ const Checkout = () => {
     }
   };
 
-  const handlePaymentChange = (e) => {
-    setPaymentData({
-      ...paymentData,
-      [e.target.name]: e.target.value,
-    });
-    // Clear error
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: "" });
-    }
-  };
-
-  // Validate Shipping step
-  const validateShipping = () => {
+  // Validate form fields
+  const validateForm = () => {
     const tempErrors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!shippingData.email || !emailRegex.test(shippingData.email)) {
-      tempErrors.email = "Please specify a valid communications email.";
+    if (!shippingData.name.trim()) tempErrors.name = "Full name signature required.";
+    if (!shippingData.phone.trim() || shippingData.phone.length < 10) {
+      tempErrors.phone = "Provide a valid 10-digit phone number.";
     }
-    if (!shippingData.name.trim()) {
-      tempErrors.name = "Full name signature required.";
-    }
-    if (!shippingData.address.trim()) {
-      tempErrors.address = "Terminal dispatch address required.";
-    }
-    if (!shippingData.city.trim()) {
-      tempErrors.city = "Dispatch city required.";
-    }
-    if (!shippingData.zipCode.trim() || shippingData.zipCode.length < 5) {
-      tempErrors.zipCode = "Zip/postal code signature invalid.";
+    if (!shippingData.address.trim()) tempErrors.address = "Delivery address is required.";
+    if (!shippingData.city.trim()) tempErrors.city = "City name required.";
+    if (!shippingData.state.trim()) tempErrors.state = "State code required.";
+    if (!shippingData.pincode.trim() || shippingData.pincode.length < 5) {
+      tempErrors.pincode = "Invalid pincode signature.";
     }
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
 
-  // Validate Payment step
-  const validatePayment = () => {
-    const tempErrors = {};
-
-    if (!paymentData.cardName.trim()) {
-      tempErrors.cardName = "Cardholder signature required.";
-    }
-    if (!paymentData.cardNumber.replace(/\s/g, "") || paymentData.cardNumber.replace(/\s/g, "").length < 16) {
-      tempErrors.cardNumber = "A 16-digit card signature is required.";
-    }
-    if (!paymentData.expiry || !paymentData.expiry.includes("/")) {
-      tempErrors.expiry = "Expiry signature (MM/YY) required.";
-    }
-    if (!paymentData.cvv || paymentData.cvv.length < 3) {
-      tempErrors.cvv = "Security CVV code (3 digits) required.";
-    }
-
-    setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
-  };
-
-  const handleNextStep = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    if (validateShipping()) {
-      setStep(2);
-    }
-  };
+    if (!validateForm()) return;
 
-  const handleCompleteOrder = (e) => {
-    e.preventDefault();
-    if (validatePayment()) {
-      // Generate Order Number
-      const randNum = Math.floor(100000 + Math.random() * 900000);
-      const orderNumber = `TS-${randNum}-Matrix`;
+    setSubmitting(true);
+    const orderToast = toast.loading("Processing order authorization blocks...");
 
-      // Save order to localStorage history logs
-      try {
-        const newOrder = {
-          orderNumber,
-          date: new Date().toISOString(),
-          customerName: shippingData.name,
-          email: shippingData.email,
-          total: finalTotal,
-          itemsCount: cart.reduce((acc, item) => acc + item.quantity, 0),
-          items: cart.map((item) => ({
-            id: item.product.id,
-            name: item.product.name,
-            price: item.product.price,
-            quantity: item.quantity,
-            image: item.product.image,
-            category: item.product.category,
-          })),
-        };
-        const existingOrders = JSON.parse(localStorage.getItem("tech_store_orders") || "[]");
-        localStorage.setItem("tech_store_orders", JSON.stringify([newOrder, ...existingOrders]));
-      } catch (err) {
-        console.error("Failed to save order transaction log:", err);
-      }
+    try {
+      const orderItems = cart.map((item) => ({
+        product: item.product._id || item.product.id,
+        quantity: item.quantity,
+        price: item.product.price - (item.product.discountPrice || 0),
+      }));
 
-      // Redirect to Order Confirmation passing details
+      const payload = {
+        items: orderItems,
+        shippingAddress: {
+          name: shippingData.name,
+          phone: shippingData.phone,
+          address: shippingData.address,
+          city: shippingData.city,
+          state: shippingData.state,
+          pincode: shippingData.pincode,
+        },
+        totalAmount: finalTotal,
+      };
+
+      const res = await apiClient.post("/orders", payload);
+      
+      toast.success("Order authorized and logged in system registry!", { id: orderToast });
+
+      // Redirect to Order Confirmation page
       navigate("/order-confirmation", {
         state: {
-          orderNumber,
+          orderNumber: `TS-${res.data._id?.substring(18).toUpperCase()}-Matrix`,
           customerName: shippingData.name,
-          email: shippingData.email,
+          email: user?.email,
           total: finalTotal,
           itemsCount: cart.reduce((acc, item) => acc + item.quantity, 0),
         },
       });
+    } catch (err) {
+      toast.error(err.message || "Checkout failed due to stock depletion or system error.", {
+        id: orderToast,
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // Prevent accessing checkout with an empty cart
   if (cart.length === 0) {
     return (
       <div className="container mx-auto px-4 py-20 text-center space-y-4">
-        <p className="text-orange-400 font-mono text-sm uppercase">Access Denied: Empty Cart Buffer.</p>
-        <Link to="/" className="inline-flex items-center space-x-2 text-white hover:text-orange-400 font-mono text-xs uppercase">
+        <p className="text-orange-600 font-mono text-sm uppercase">Access Denied: Empty Cart Buffer.</p>
+        <Link to="/" className="inline-flex items-center space-x-2 text-stone-850 hover:text-orange-655 font-mono text-xs uppercase">
           <ArrowLeft className="w-4 h-4" />
           <span>Return to Catalog</span>
         </Link>
@@ -183,266 +148,172 @@ const Checkout = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
-      
-      {/* Page Header & Stepper */}
-      <div className="border-b border-gray-900/60 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-white uppercase tracking-wider">
-            Checkout <span className="text-orange-400">Terminal</span>
-          </h1>
-        </div>
-
-        {/* Stepper Steps UI */}
-        <div className="flex items-center space-x-4 font-mono text-xs">
-          <span className={`px-3 py-1.5 rounded-xl border ${step === 1 ? "bg-orange-500/15 border-orange-500 text-orange-400 font-bold" : "bg-gray-900/50 border-gray-800 text-gray-500"}`}>
-            1. Dispatch Node
-          </span>
-          <span className="text-gray-850">==&gt;</span>
-          <span className={`px-3 py-1.5 rounded-xl border ${step === 2 ? "bg-orange-500/15 border-orange-500 text-orange-400 font-bold" : "bg-gray-900/50 border-gray-800 text-gray-500"}`}>
-            2. Payment Gate
-          </span>
-        </div>
+    <div className="container mx-auto px-4 py-8 space-y-8 animate-fadeIn text-stone-800">
+      {/* Page Header */}
+      <div className="border-b border-stone-105 pb-4">
+        <h1 className="text-2xl md:text-3xl font-extrabold text-stone-900">
+          Checkout <span className="text-orange-600">Terminal</span>
+        </h1>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
-        {/* Left Side: Form Deck */}
-        <div className="lg:col-span-2 bg-gray-950/40 border border-gray-900 rounded-3xl p-6 md:p-8">
-          
-          {step === 1 ? (
-            /* STEP 1: Shipping Address details */
-            <form onSubmit={handleNextStep} className="space-y-6">
-              <h2 className="text-lg font-bold font-mono uppercase tracking-wider text-white border-b border-gray-900 pb-3 flex items-center space-x-2">
-                <Terminal className="w-5 h-5 text-orange-400" />
-                <span>Dispatch Details</span>
-              </h2>
+        {/* Left Side: Shipping Address Form */}
+        <div className="lg:col-span-2 bg-white border border-stone-100 rounded-[28px] p-6 md:p-8 shadow-sm text-left">
+          <form onSubmit={handlePlaceOrder} className="space-y-6">
+            <h2 className="text-base font-bold font-sans uppercase tracking-wider text-stone-800 border-b border-stone-100 pb-3 flex items-center space-x-2">
+              <Terminal className="w-5 h-5 text-orange-600" />
+              <span>Dispatch Protocols</span>
+            </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Contact Email */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Contact Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={shippingData.email}
-                    onChange={handleShippingChange}
-                    placeholder="architect@matrix.com"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors"
-                  />
-                  {errors.email && <p className="text-xs text-red-400 font-mono">{errors.email}</p>}
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Receiver Name */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">Receiver Signature (Full Name)</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={shippingData.name}
+                  onChange={handleInputChange}
+                  placeholder="John Doe"
+                  className="w-full bg-stone-50 border border-stone-250 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-4 text-xs text-stone-800 focus:outline-none transition-colors"
+                />
+                {errors.name && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.name}</p>}
+              </div>
 
-                {/* Full Name */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Receiver Signature (Full Name)</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={shippingData.name}
-                    onChange={handleShippingChange}
-                    placeholder="John Doe"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors"
-                  />
-                  {errors.name && <p className="text-xs text-red-400 font-mono">{errors.name}</p>}
-                </div>
+              {/* Phone */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">Contact Phone Number</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={shippingData.phone}
+                  onChange={handleInputChange}
+                  placeholder="9876543210"
+                  className="w-full bg-stone-50 border border-stone-250 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-4 text-xs text-stone-800 focus:outline-none transition-colors"
+                />
+                {errors.phone && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.phone}</p>}
+              </div>
 
-                {/* Delivery Address */}
-                <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Node Address (Street / Suite)</label>
-                  <input
-                    type="text"
-                    name="address"
-                    value={shippingData.address}
-                    onChange={handleShippingChange}
-                    placeholder="128 Cyber Avenue, Suite B"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors"
-                  />
-                  {errors.address && <p className="text-xs text-red-400 font-mono">{errors.address}</p>}
-                </div>
+              {/* Street Address */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">Node Address (Street / Suite)</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={shippingData.address}
+                  onChange={handleInputChange}
+                  placeholder="128 Cyber Avenue, Suite B"
+                  className="w-full bg-stone-50 border border-stone-255 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-4 text-xs text-stone-800 focus:outline-none transition-colors"
+                />
+                {errors.address && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.address}</p>}
+              </div>
 
-                {/* City */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">City Sector</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={shippingData.city}
-                    onChange={handleShippingChange}
-                    placeholder="Neo City"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors"
-                  />
-                  {errors.city && <p className="text-xs text-red-400 font-mono">{errors.city}</p>}
-                </div>
+              {/* City */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">City Sector</label>
+                <input
+                  type="text"
+                  name="city"
+                  value={shippingData.city}
+                  onChange={handleInputChange}
+                  placeholder="Neo City"
+                  className="w-full bg-stone-50 border border-stone-250 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-4 text-xs text-stone-800 focus:outline-none transition-colors"
+                />
+                {errors.city && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.city}</p>}
+              </div>
 
-                {/* Zip Code */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Zip Code</label>
+              {/* State & Pincode Grid */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">State</label>
                   <input
                     type="text"
-                    name="zipCode"
-                    value={shippingData.zipCode}
-                    onChange={handleShippingChange}
+                    name="state"
+                    value={shippingData.state}
+                    onChange={handleInputChange}
+                    placeholder="CA"
+                    className="w-full bg-stone-50 border border-stone-250 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-2 text-xs text-stone-800 focus:outline-none transition-colors"
+                  />
+                  {errors.state && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.state}</p>}
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase text-stone-400 tracking-wider">Pincode</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={shippingData.pincode}
+                    onChange={handleInputChange}
                     placeholder="94016"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors"
+                    className="w-full bg-stone-50 border border-stone-250 focus:bg-white focus:border-orange-500/30 rounded-2xl py-3 px-2 text-xs text-stone-800 focus:outline-none transition-colors"
                   />
-                  {errors.zipCode && <p className="text-xs text-red-400 font-mono">{errors.zipCode}</p>}
+                  {errors.pincode && <p className="text-xs text-red-600 font-mono mt-0.5">{errors.pincode}</p>}
                 </div>
               </div>
+            </div>
 
-              {/* Navigation controls */}
-              <div className="pt-4 border-t border-gray-900/50 flex justify-between">
-                <Link
-                  to="/cart"
-                  className="inline-flex items-center space-x-2 text-xs font-mono uppercase text-gray-500 hover:text-white transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Return to Cart</span>
-                </Link>
-                
-                <button
-                  type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-mono text-xs px-6 py-3.5 rounded-2xl font-bold uppercase transition-all duration-150 flex items-center space-x-2 cursor-pointer shadow-lg shadow-orange-500/20"
-                >
-                  <span>Verify and Proceed</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+            {/* Encryption Trust Notice */}
+            <div className="bg-orange-50 border border-orange-100/50 rounded-2xl p-4 flex items-start space-x-3">
+              <ShieldCheck className="w-5 h-5 text-orange-605 flex-shrink-0 mt-0.5" />
+              <div className="space-y-1 font-sans text-[10px] leading-relaxed text-stone-500 uppercase font-semibold">
+                <p className="font-bold text-stone-700">Order Verification Secured</p>
+                <p>No payment card is required for processing. Review your items on the right side panel and confirm your order.</p>
               </div>
+            </div>
 
-            </form>
-          ) : (
-            /* STEP 2: Credit Card info */
-            <form onSubmit={handleCompleteOrder} className="space-y-6">
-              <h2 className="text-lg font-bold font-mono uppercase tracking-wider text-white border-b border-gray-900 pb-3 flex items-center space-x-2">
-                <CreditCard className="w-5 h-5 text-orange-400" />
-                <span>Secure Payment Gate</span>
-              </h2>
-
-              <div className="space-y-5">
-                {/* Cardholder Name */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Cardholder Signature Name</label>
-                  <input
-                    type="text"
-                    name="cardName"
-                    value={paymentData.cardName}
-                    onChange={handlePaymentChange}
-                    placeholder="JOHN DOE"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors font-mono uppercase"
-                  />
-                  {errors.cardName && <p className="text-xs text-red-400 font-mono">{errors.cardName}</p>}
-                </div>
-
-                {/* Card Number */}
-                <div className="space-y-2">
-                  <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Card Number (16 Digits)</label>
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    value={paymentData.cardNumber}
-                    onChange={handlePaymentChange}
-                    placeholder="4111 2222 3333 4444"
-                    maxLength="19"
-                    className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors font-mono"
-                  />
-                  {errors.cardNumber && <p className="text-xs text-red-400 font-mono">{errors.cardNumber}</p>}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Expiry */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">Expiry (MM/YY)</label>
-                    <input
-                      type="text"
-                      name="expiry"
-                      value={paymentData.expiry}
-                      onChange={handlePaymentChange}
-                      placeholder="12/28"
-                      maxLength="5"
-                      className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors font-mono"
-                    />
-                    {errors.expiry && <p className="text-xs text-red-400 font-mono">{errors.expiry}</p>}
-                  </div>
-
-                  {/* CVV */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono uppercase text-gray-500 tracking-wider">CVV Code</label>
-                    <input
-                      type="password"
-                      name="cvv"
-                      value={paymentData.cvv}
-                      onChange={handlePaymentChange}
-                      placeholder="***"
-                      maxLength="4"
-                      className="w-full bg-gray-900/50 border border-gray-800 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-sm text-white focus:outline-none transition-colors font-mono"
-                    />
-                    {errors.cvv && <p className="text-xs text-red-400 font-mono">{errors.cvv}</p>}
-                  </div>
-                </div>
-              </div>
-
-              {/* Encryption Trust Notice */}
-              <div className="bg-orange-500/5 border border-orange-500/10 rounded-2xl p-4 flex items-start space-x-3">
-                <ShieldCheck className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
-                <div className="space-y-1 font-mono text-[10px] leading-relaxed text-gray-500 uppercase">
-                  <p className="font-bold text-gray-400">Secure Matrix SSL Encryption Enabled</p>
-                  <p>All credit information is parsed using virtual tokens. We never store raw cardholder keys.</p>
-                </div>
-              </div>
-
-              {/* Navigation controls */}
-              <div className="pt-4 border-t border-gray-900/50 flex justify-between">
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="inline-flex items-center space-x-2 text-xs font-mono uppercase text-gray-500 hover:text-white transition-colors cursor-pointer"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Dispatch</span>
-                </button>
-                
-                <button
-                  type="submit"
-                  className="bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-mono text-xs px-6 py-3.5 rounded-2xl font-bold uppercase transition-all duration-150 flex items-center space-x-2 cursor-pointer shadow-lg shadow-orange-500/20"
-                >
-                  <span>Authorize Charge</span>
-                  <ShieldCheck className="w-4 h-4" />
-                </button>
-              </div>
-
-            </form>
-          )}
-
+            {/* Navigation controls */}
+            <div className="pt-4 border-t border-stone-100 flex justify-between items-center font-mono text-xs">
+              <Link
+                to="/cart"
+                className="inline-flex items-center space-x-2 text-stone-400 hover:text-orange-600 transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Return to Cart</span>
+              </Link>
+              
+              <button
+                type="submit"
+                disabled={submitting}
+                className="bg-orange-600 hover:bg-orange-700 active:bg-orange-850 text-white font-sans text-xs px-6 py-3.5 rounded-2xl font-bold uppercase tracking-wider transition-all duration-150 flex items-center space-x-2 cursor-pointer shadow-sm hover:shadow"
+              >
+                <span>Confirm Purchase</span>
+                <ShoppingBag className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </form>
         </div>
 
-        {/* Right Side: Order Summary Checklist */}
-        <aside className="space-y-6">
-          <div className="bg-gray-950/40 border border-gray-900 rounded-3xl p-6 space-y-4">
-            <h3 className="text-base font-bold font-mono uppercase tracking-wider text-white border-b border-gray-900 pb-3">
+        {/* Right Side: Order Summary */}
+        <aside className="space-y-6 text-left">
+          <div className="bg-white border border-stone-100 rounded-[28px] p-6 space-y-4 shadow-sm">
+            <h3 className="text-base font-bold font-sans uppercase tracking-wider text-stone-800 border-b border-stone-100 pb-3">
               Order Node Summary
             </h3>
 
             {/* Product items lists */}
             <div className="max-h-[220px] overflow-y-auto space-y-3 pr-2 scrollbar-thin">
-              {cart.map((item) => (
-                <div key={item.product.id} className="flex justify-between items-center text-xs font-mono">
-                  <div className="min-w-0 pr-4">
-                    <span className="text-white block font-bold truncate">{item.product.name}</span>
-                    <span className="text-gray-500">Qty {item.quantity} x {formatMoney(item.product.price)}</span>
+              {cart.map((item) => {
+                const name = item.product.title || item.product.name;
+                const price = item.product.price - (item.product.discountPrice || 0);
+                return (
+                  <div key={item.product._id || item.product.id} className="flex justify-between items-center text-xs font-mono">
+                    <div className="min-w-0 pr-4">
+                      <span className="text-stone-800 block font-bold truncate">{name}</span>
+                      <span className="text-stone-400 font-sans">Qty {item.quantity} x {formatMoney(price)}</span>
+                    </div>
+                    <span className="text-stone-800 font-bold">{formatMoney(price * item.quantity)}</span>
                   </div>
-                  <span className="text-white font-bold">{formatMoney(item.product.price * item.quantity)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Calculations lines */}
-            <div className="border-t border-gray-900 pt-4 space-y-2.5 font-mono text-xs text-gray-500">
+            <div className="border-t border-stone-100 pt-4 space-y-2.5 font-mono text-xs text-stone-500">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>{formatMoney(cartSubtotal)}</span>
               </div>
               {discountCost > 0 && (
-                <div className="flex justify-between text-emerald-400">
+                <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Matrix Promo</span>
                   <span>-{formatMoney(discountCost)}</span>
                 </div>
@@ -458,15 +329,13 @@ const Checkout = () => {
             </div>
 
             {/* Grand Total */}
-            <div className="border-t border-gray-900 pt-4 flex justify-between items-center font-mono">
-              <span className="text-xs font-bold text-white uppercase tracking-wider">Final Total</span>
-              <span className="text-xl font-extrabold text-orange-400">{formatMoney(finalTotal)}</span>
+            <div className="border-t border-stone-100 pt-4 flex justify-between items-center font-mono">
+              <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Final Total</span>
+              <span className="text-xl font-extrabold text-orange-600">{formatMoney(finalTotal)}</span>
             </div>
           </div>
         </aside>
-
       </div>
-      
     </div>
   );
 };

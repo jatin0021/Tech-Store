@@ -21,13 +21,13 @@ const Category = ({ activeCategory, onCategoryChange }) => {
           <button
             key={cat.id}
             onClick={() => onCategoryChange(cat.id)}
-            className={`flex items-center space-x-2 px-5 py-3 rounded-2xl font-mono text-sm uppercase tracking-wider font-bold transition-all duration-200 border cursor-pointer whitespace-nowrap ${
+            className={`flex items-center space-x-2 px-5 py-3 rounded-2xl font-mono text-xs uppercase tracking-wider font-bold transition-all duration-200 border cursor-pointer whitespace-nowrap ${
               isActive
-                ? "bg-orange-500/15 border-orange-500 text-orange-400 shadow-md shadow-orange-500/10"
-                : "bg-gray-950/40 border-gray-900 text-gray-500 hover:text-white hover:border-gray-800"
+                ? "bg-orange-50 border-orange-500 text-orange-655 shadow-sm shadow-orange-100"
+                : "bg-white border-stone-100 text-stone-550 hover:text-stone-850 hover:border-stone-200/80 shadow-sm"
             }`}
           >
-            <IconComponent className={`w-4 h-4 ${isActive ? "text-orange-400" : "text-gray-500"}`} />
+            <IconComponent className={`w-4 h-4 ${isActive ? "text-orange-600" : "text-stone-400"}`} />
             <span>{cat.name}</span>
           </button>
         );

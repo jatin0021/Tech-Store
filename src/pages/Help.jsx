@@ -111,18 +111,18 @@ const Help = () => {
   }, [terminalLogs]);
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12 max-w-5xl">
+    <div className="container mx-auto px-4 py-8 space-y-12 max-w-5xl text-stone-800 animate-fadeIn">
       
       {/* Page Header */}
       <section className="text-center space-y-4 py-4">
-        <div className="inline-flex items-center space-x-2 bg-orange-500/10 border border-orange-500/30 px-3.5 py-1.5 rounded-full text-orange-400 font-mono text-xs uppercase tracking-widest">
-          <HelpCircle className="w-4 h-4" />
+        <div className="inline-flex items-center space-x-2 bg-orange-50 border border-orange-100 px-3.5 py-1.5 rounded-full text-orange-655 font-mono text-xs uppercase tracking-widest font-semibold shadow-sm">
+          <HelpCircle className="w-4 h-4 text-orange-600" />
           <span>Support Deck / Help Center</span>
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold uppercase tracking-wider text-white">
-          System <span className="text-orange-400">Diagnostics & Help</span>
+        <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-stone-900 leading-none">
+          Diagnostics & <span className="text-orange-655">Help Core</span>
         </h1>
-        <p className="text-sm text-gray-500 max-w-lg mx-auto">
+        <p className="text-sm text-stone-500 max-w-lg mx-auto">
           Troubleshoot hardware exchanges, verify system telemetry, or consult our FAQ matrix.
         </p>
       </section>
@@ -132,31 +132,31 @@ const Help = () => {
         
         {/* Left: FAQs Accordion */}
         <section className="space-y-6">
-          <div className="flex items-center space-x-3 border-b border-orange-950 pb-3">
-            <HelpCircle className="w-6 h-6 text-orange-400" />
-            <h2 className="text-2xl font-bold uppercase tracking-wide">FAQ Nodes</h2>
+          <div className="flex items-center space-x-3 border-b border-stone-150 pb-3">
+            <HelpCircle className="w-6 h-6 text-orange-655" />
+            <h2 className="text-xl font-bold uppercase tracking-wide text-stone-850">FAQ Nodes</h2>
           </div>
           
           <div className="space-y-4">
             {faqs.map((faq, index) => (
               <div 
                 key={index} 
-                className="bg-gray-950 border border-orange-950/60 hover:border-orange-500/30 rounded-2xl overflow-hidden transition-all duration-200"
+                className="bg-white border border-stone-100 hover:border-orange-500/20 rounded-2xl overflow-hidden transition-all duration-200 shadow-sm"
               >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-5 text-left font-sans font-semibold text-white focus:outline-none cursor-pointer"
+                  className="w-full flex items-center justify-between p-5 text-left font-sans font-semibold text-stone-800 focus:outline-none cursor-pointer"
                 >
                   <span className="text-sm md:text-base pr-4">{faq.q}</span>
                   {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-orange-400 shrink-0" />
+                    <ChevronUp className="w-5 h-5 text-orange-600 shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-orange-400 shrink-0" />
+                    <ChevronDown className="w-5 h-5 text-orange-600 shrink-0" />
                   )}
                 </button>
                 
                 {openFaq === index && (
-                  <div className="px-5 pb-5 pt-1 text-sm text-gray-400 border-t border-orange-950/20 leading-relaxed font-sans">
+                  <div className="px-5 pb-5 pt-1 text-sm text-stone-505 border-t border-stone-100 leading-relaxed font-sans">
                     {faq.a}
                   </div>
                 )}
@@ -167,20 +167,20 @@ const Help = () => {
 
         {/* Right: Dynamic Diagnostics Terminal */}
         <section id="diagnostics" className="space-y-6 scroll-mt-24">
-          <div className="flex items-center justify-between border-b border-orange-950 pb-3">
+          <div className="flex items-center justify-between border-b border-stone-150 pb-3">
             <div className="flex items-center space-x-3">
-              <Terminal className="w-6 h-6 text-orange-400" />
-              <h2 className="text-2xl font-bold uppercase tracking-wide">Terminal Diagnostics</h2>
+              <Terminal className="w-6 h-6 text-orange-655" />
+              <h2 className="text-xl font-bold uppercase tracking-wide text-stone-850">Terminal Diagnostics</h2>
             </div>
-            <span className="flex items-center space-x-1.5 text-xs font-mono text-gray-500">
-              <Activity className={`w-3.5 h-3.5 ${isScanning ? "animate-pulse text-orange-400" : ""}`} />
+            <span className="flex items-center space-x-1.5 text-xs font-mono text-stone-450">
+              <Activity className={`w-3.5 h-3.5 ${isScanning ? "animate-pulse text-orange-600" : ""}`} />
               <span>{isScanning ? "SCANNING" : "STANDBY"}</span>
             </span>
           </div>
 
-          <div className="bg-black/90 border border-orange-950/80 rounded-2xl p-5 font-mono shadow-2xl relative">
+          <div className="bg-stone-950 border border-stone-900 rounded-3xl p-5 font-mono shadow-xl relative text-stone-100 text-left">
             {/* Terminal Window Chrome */}
-            <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-gray-900 text-xs text-gray-600">
+            <div className="flex items-center space-x-2 pb-4 mb-4 border-b border-stone-900 text-xs text-stone-650">
               <span className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/40"></span>
               <span className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/40"></span>
               <span className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/40"></span>
@@ -188,15 +188,15 @@ const Help = () => {
             </div>
 
             {/* Scrollable logs area */}
-            <div className="h-64 overflow-y-auto space-y-2 text-xs md:text-sm custom-scrollbar text-orange-400/90 leading-relaxed">
+            <div className="h-64 overflow-y-auto space-y-2 text-xs md:text-sm custom-scrollbar text-emerald-400 leading-relaxed">
               {terminalLogs.length === 0 ? (
-                <div className="text-gray-600 italic py-10 text-center">
+                <div className="text-stone-600 italic py-10 text-center">
                   Diagnostic console idle. Trigger scan module to begin packet validation.
                 </div>
               ) : (
                 terminalLogs.map((log, index) => (
                   <div key={index} className="flex items-start space-x-2">
-                    <span className="text-orange-600 select-none">&gt;</span>
+                    <span className="text-emerald-600 select-none">&gt;</span>
                     <span>{log}</span>
                   </div>
                 ))
@@ -207,13 +207,13 @@ const Help = () => {
             {/* Scan Progress Bar */}
             {isScanning && (
               <div className="mt-4 space-y-1">
-                <div className="flex justify-between text-[10px] text-gray-500 font-mono">
+                <div className="flex justify-between text-[10px] text-stone-500 font-mono">
                   <span>ANALYZING SYSTEM ARRAYS</span>
                   <span>{scanProgress}%</span>
                 </div>
-                <div className="w-full bg-gray-950 h-1.5 rounded-full overflow-hidden border border-orange-950/50">
+                <div className="w-full bg-stone-900 h-1.5 rounded-full overflow-hidden border border-stone-800">
                   <div 
-                    className="bg-gradient-to-r from-orange-600 to-orange-400 h-full rounded-full transition-all duration-300"
+                    className="bg-gradient-to-r from-orange-500 to-amber-400 h-full rounded-full transition-all duration-300"
                     style={{ width: `${scanProgress}%` }}
                   />
                 </div>
@@ -227,8 +227,8 @@ const Help = () => {
                 disabled={isScanning}
                 className={`flex items-center space-x-2 font-mono text-xs uppercase px-4 py-2.5 rounded-xl border font-bold transition-all duration-200 cursor-pointer ${
                   isScanning 
-                    ? "bg-gray-950 border-gray-900 text-gray-600 cursor-not-allowed" 
-                    : "bg-orange-500/10 hover:bg-orange-500/20 border-orange-500/35 hover:border-orange-500/60 text-orange-400 shadow-lg"
+                    ? "bg-stone-900 border-stone-850 text-stone-600 cursor-not-allowed" 
+                    : "bg-orange-655 hover:bg-orange-755 text-white shadow-sm border border-orange-500/20"
                 }`}
               >
                 <Cpu className={`w-4 h-4 ${isScanning ? "animate-spin" : ""}`} />
@@ -244,31 +244,31 @@ const Help = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Left: Simulated RMA returns portal */}
-        <section id="rma" className="bg-gray-950 border border-orange-950/50 rounded-3xl p-6 space-y-6 scroll-mt-24">
-          <div className="flex items-center space-x-3 border-b border-orange-950/20 pb-3">
-            <RefreshCw className="w-6 h-6 text-orange-400" />
-            <h2 className="text-xl font-bold uppercase tracking-wide">RMA Module Registry</h2>
+        <section id="rma" className="bg-white border border-stone-100 rounded-3xl p-6 space-y-6 shadow-sm scroll-mt-24 text-left">
+          <div className="flex items-center space-x-3 border-b border-stone-150 pb-3">
+            <RefreshCw className="w-6 h-6 text-orange-655" />
+            <h2 className="text-xl font-bold uppercase tracking-wide text-stone-800">RMA Module Registry</h2>
           </div>
 
-          <form onSubmit={handleRmaSubmit} className="space-y-4">
+          <form onSubmit={handleRmaSubmit} className="space-y-4 font-sans text-xs">
             <div className="space-y-1.5">
-              <label className="text-xs uppercase font-mono text-gray-500">Order Reference Signature</label>
+              <label className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Order Reference Signature</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. ORD-8012-Y4"
                 value={rmaForm.orderId}
                 onChange={(e) => setRmaForm({ ...rmaForm, orderId: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-800 focus:border-orange-500/50 focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-colors"
+                className="w-full bg-stone-50 border border-stone-200 focus:border-orange-500/30 focus:outline-none rounded-xl px-4 py-2.5 text-xs text-stone-800 focus:bg-white transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs uppercase font-mono text-gray-500">Hardware Sector Type</label>
+              <label className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Hardware Sector Type</label>
               <select
                 value={rmaForm.hardwareType}
                 onChange={(e) => setRmaForm({ ...rmaForm, hardwareType: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-800 focus:border-orange-500/50 focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-colors"
+                className="w-full bg-stone-50 border border-stone-200 focus:border-orange-500/30 focus:outline-none rounded-xl px-4 py-2.5 text-xs text-stone-805 focus:bg-white transition-colors cursor-pointer"
               >
                 <option value="gpu">Gaming Graphics Unit (GPU)</option>
                 <option value="cpu">Processing Unit (CPU)</option>
@@ -279,43 +279,43 @@ const Help = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs uppercase font-mono text-gray-500">Telemetry / Issue Log Description</label>
+              <label className="text-[10px] uppercase font-bold text-stone-400 tracking-wider">Telemetry Description</label>
               <textarea
                 rows="3"
                 required
                 placeholder="Describe component failure symptoms..."
                 value={rmaForm.issueDescription}
                 onChange={(e) => setRmaForm({ ...rmaForm, issueDescription: e.target.value })}
-                className="w-full bg-gray-900 border border-gray-800 focus:border-orange-500/50 focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-colors resize-none"
+                className="w-full bg-stone-50 border border-stone-200 focus:border-orange-500/30 focus:outline-none rounded-xl px-4 py-2.5 text-xs text-stone-800 focus:bg-white transition-colors resize-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white font-mono text-xs uppercase font-bold py-3 rounded-xl transition-colors cursor-pointer shadow-lg shadow-orange-500/10"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-mono text-xs uppercase font-bold py-3 rounded-xl transition-colors cursor-pointer shadow-sm hover:shadow border border-orange-500/20"
             >
               Generate RMA Ticket
             </button>
           </form>
 
           {rmaResult && (
-            <div className="bg-orange-500/5 border border-orange-500/20 p-5 rounded-2xl space-y-3 animate-fade-in">
-              <div className="flex items-center space-x-2 text-orange-400 font-mono text-xs uppercase">
-                <CheckCircle className="w-4 h-4" />
+            <div className="bg-orange-50 border border-orange-150 p-5 rounded-2xl space-y-3 animate-fadeIn">
+              <div className="flex items-center space-x-2 text-orange-655 font-mono text-xs uppercase font-semibold">
+                <CheckCircle className="w-4 h-4 text-orange-600" />
                 <span>TICKET GENERATED SUCCESSFULLY</span>
               </div>
               <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                 <div>
-                  <span className="text-gray-500 block uppercase text-[10px]">RMA Sign ID</span>
-                  <span className="text-white font-bold">{rmaResult.code}</span>
+                  <span className="text-stone-400 block uppercase text-[10px]">RMA Sign ID</span>
+                  <span className="text-stone-800 font-bold">{rmaResult.code}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 block uppercase text-[10px]">Status</span>
-                  <span className="text-orange-400 font-bold">{rmaResult.status}</span>
+                  <span className="text-stone-400 block uppercase text-[10px]">Status</span>
+                  <span className="text-orange-600 font-bold">{rmaResult.status}</span>
                 </div>
               </div>
-              <div className="text-xs text-gray-400 border-t border-orange-950/20 pt-2 font-sans">
-                <span className="text-gray-500 font-mono text-[10px] block uppercase">Instructions</span>
+              <div className="text-xs text-stone-505 border-t border-orange-150 pt-2 font-sans">
+                <span className="text-stone-400 font-mono text-[10px] block uppercase">Instructions</span>
                 {rmaResult.instructions}
               </div>
             </div>
@@ -323,45 +323,45 @@ const Help = () => {
         </section>
 
         {/* Right: Delivery Nodes info */}
-        <section id="delivery" className="bg-gray-950 border border-orange-950/50 rounded-3xl p-6 space-y-6 scroll-mt-24">
-          <div className="flex items-center space-x-3 border-b border-orange-950/20 pb-3">
-            <Truck className="w-6 h-6 text-orange-400" />
-            <h2 className="text-xl font-bold uppercase tracking-wide">Delivery Port Rates</h2>
+        <section id="delivery" className="bg-white border border-stone-100 rounded-3xl p-6 space-y-6 shadow-sm scroll-mt-24 text-left">
+          <div className="flex items-center space-x-3 border-b border-stone-150 pb-3">
+            <Truck className="w-6 h-6 text-orange-655" />
+            <h2 className="text-xl font-bold uppercase tracking-wide text-stone-850">Delivery Port Rates</h2>
           </div>
 
-          <p className="text-sm text-gray-400 leading-relaxed">
+          <p className="text-sm text-stone-500 leading-relaxed font-medium font-sans">
             All system dispatches originate from central warehouses. Dynamic rates are computed at transit portals.
           </p>
 
-          <div className="space-y-4 font-mono">
-            <div className="flex justify-between items-center p-4 bg-gray-900 border border-gray-800/80 rounded-2xl">
+          <div className="space-y-4 font-mono text-xs">
+            <div className="flex justify-between items-center p-4 bg-stone-50 border border-stone-150 rounded-2xl">
               <div>
-                <span className="text-white block font-bold text-sm uppercase">Standard Delivery</span>
-                <span className="text-gray-500 text-xs">Sectors 1-4 transit nodes</span>
+                <span className="text-stone-850 block font-bold text-sm uppercase">Standard Delivery</span>
+                <span className="text-stone-400 text-xs">Sectors 1-4 transit nodes</span>
               </div>
-              <span className="text-orange-400 text-sm font-bold">$15.00</span>
+              <span className="text-orange-600 text-sm font-bold">$15.00</span>
             </div>
 
-            <div className="flex justify-between items-center p-4 bg-gray-900 border border-gray-800/80 rounded-2xl">
+            <div className="flex justify-between items-center p-4 bg-stone-50 border border-stone-150 rounded-2xl">
               <div>
-                <span className="text-white block font-bold text-sm uppercase">Priority Hyper-Freight</span>
-                <span className="text-gray-500 text-xs">Direct beam to sector core</span>
+                <span className="text-stone-855 block font-bold text-sm uppercase">Priority Hyper-Freight</span>
+                <span className="text-stone-400 text-xs">Direct beam to sector core</span>
               </div>
-              <span className="text-orange-400 text-sm font-bold">$45.00</span>
+              <span className="text-orange-600 text-sm font-bold">$45.00</span>
             </div>
 
-            <div className="flex justify-between items-center p-4 bg-orange-500/5 border border-orange-500/20 rounded-2xl">
+            <div className="flex justify-between items-center p-4 bg-orange-55 border border-orange-100 rounded-2xl">
               <div>
-                <span className="text-orange-400 block font-bold text-sm uppercase">Free Priority Option</span>
-                <span className="text-gray-500 text-xs">For modules orders exceeding $500</span>
+                <span className="text-orange-655 block font-bold text-sm uppercase">Free Priority Option</span>
+                <span className="text-stone-400 text-xs">For modules orders exceeding $500</span>
               </div>
-              <span className="text-orange-400 text-sm font-bold uppercase">FREE</span>
+              <span className="text-orange-600 text-sm font-bold uppercase">FREE</span>
             </div>
           </div>
 
-          <div className="p-4 bg-orange-500/5 border border-orange-500/10 rounded-2xl flex items-start space-x-3">
-            <ShieldCheck className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-500 leading-relaxed">
+          <div className="p-4 bg-orange-50 border border-orange-100/50 rounded-2xl flex items-start space-x-3">
+            <ShieldCheck className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-stone-505 leading-relaxed font-sans uppercase font-bold">
               All dispatches include electronic serial confirmation signatures. Transit insurance is automatically applied.
             </p>
           </div>
