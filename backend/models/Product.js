@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { makeMockModel } from "../config/mockDb.js";
 
 const productSchema = new mongoose.Schema(
   {
@@ -77,6 +78,11 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-const Product = mongoose.model("Product", productSchema);
+console.log(`Product.js evaluation: process.env.MOCK_DB = "${process.env.MOCK_DB}"`);
+const Product = process.env.MOCK_DB === "true" 
+  ? makeMockModel("Product") 
+  : mongoose.model("Product", productSchema);
+
+console.log(`Product model resolved to: ${Product.name || 'MongooseModel'}`);
 
 export default Product;

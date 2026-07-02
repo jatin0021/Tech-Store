@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { makeMockModel } from "../config/mockDb.js";
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -31,6 +32,8 @@ const reviewSchema = new mongoose.Schema(
 // Enforce one review per user per product
 reviewSchema.index({ user: 1, product: 1 }, { unique: true });
 
-const Review = mongoose.model("Review", reviewSchema);
+const Review = process.env.MOCK_DB === "true" 
+  ? makeMockModel("Review") 
+  : mongoose.model("Review", reviewSchema);
 
 export default Review;

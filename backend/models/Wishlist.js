@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { makeMockModel } from "../config/mockDb.js";
 
 const wishlistSchema = new mongoose.Schema(
   {
@@ -20,6 +21,8 @@ const wishlistSchema = new mongoose.Schema(
   }
 );
 
-const Wishlist = mongoose.model("Wishlist", wishlistSchema);
+const Wishlist = process.env.MOCK_DB === "true" 
+  ? makeMockModel("Wishlist") 
+  : mongoose.model("Wishlist", wishlistSchema);
 
 export default Wishlist;

@@ -23,7 +23,7 @@ const Cart = () => {
     const code = promoInput.trim().toUpperCase();
     if (code === "TECH10") {
       setDiscountRate(0.10);
-      setPromoSuccess("Coupon Applied: 10% matrix discount credited!");
+      setPromoSuccess("Coupon Applied: 10% discount credited!");
       toast.success("Promo discount credited!");
     } else if (code === "") {
       setPromoError("Please enter a code.");
@@ -53,14 +53,14 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8 animate-fadeIn text-stone-800">
+    <div className="container mx-auto px-4 py-8 space-y-8 animate-fadeIn text-gray-800">
       
       {/* Page Header */}
-      <div className="border-b border-stone-100 pb-4 flex items-center justify-between">
-        <h1 className="text-2xl md:text-3xl font-extrabold text-stone-905">
-          Shopping Cart <span className="text-orange-600">Deck</span>
+      <div className="border-b border-gray-200 pb-4 flex items-center justify-between">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          Shopping Cart
         </h1>
-        <Link to="/" className="text-xs text-stone-400 hover:text-orange-600 font-mono transition-colors uppercase flex items-center space-x-1">
+        <Link to="/collections" className="text-xs text-gray-400 hover:text-blue-600 font-sans tracking-wide font-semibold transition-colors uppercase flex items-center space-x-1">
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Keep Browsing</span>
         </Link>
@@ -68,21 +68,21 @@ const Cart = () => {
 
       {cart.length === 0 ? (
         /* Empty Cart State */
-        <div className="flex flex-col items-center justify-center py-24 text-center space-y-6 border border-dashed border-stone-200 rounded-3xl bg-white shadow-sm">
-          <div className="p-6 bg-orange-50 rounded-full border border-orange-100 text-orange-600">
+        <div className="flex flex-col items-center justify-center py-24 text-center space-y-6 border border-dashed border-gray-200 rounded-xl bg-white shadow-sm">
+          <div className="p-6 bg-blue-50 rounded-full border border-blue-100 text-blue-600">
             <ShoppingCart className="w-12 h-12" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-xl font-bold text-stone-850 uppercase tracking-wider">Cart Matrix Empty</h2>
-            <p className="text-sm text-stone-500 max-w-sm">
-              Your active checkout buffer is currently empty. Query the hardware store to load items.
+            <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wider font-sans">Your Cart is Empty</h2>
+            <p className="text-sm text-gray-500 max-w-sm">
+              Your active checkout buffer is currently empty. Explore the catalog to add items.
             </p>
           </div>
           <Link
-            to="/"
-            className="bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white font-mono text-xs px-6 py-3.5 rounded-2xl font-bold uppercase transition-all duration-150 cursor-pointer shadow-sm"
+            to="/collections"
+            className="bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-sans text-xs px-6 py-3.5 rounded-lg font-bold uppercase transition-all duration-150 cursor-pointer shadow-sm border-none block"
           >
-            Explore System Catalog
+            Explore Catalog
           </Link>
         </div>
       ) : (
@@ -91,7 +91,7 @@ const Cart = () => {
           
           {/* Left Side: Cart Items List */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="space-y-4 font-mono">
+            <div className="space-y-4">
               {cart.map((item) => (
                 <CartItem key={item.product._id || item.product.id} item={item} />
               ))}
@@ -100,15 +100,15 @@ const Cart = () => {
             {/* Clear Cart Button */}
             <button
               onClick={() => {
-                if (window.confirm("Are you sure you want to purge the cart buffer?")) {
+                if (window.confirm("Are you sure you want to purge the cart?")) {
                   clearCart();
-                  toast.success("Cart purged successfully.");
+                  toast.success("Cart cleared successfully.");
                 }
               }}
-              className="inline-flex items-center space-x-2 text-xs text-stone-400 hover:text-red-600 transition-colors font-mono uppercase cursor-pointer"
+              className="inline-flex items-center space-x-2 text-xs text-gray-400 hover:text-red-650 transition-colors font-sans font-semibold uppercase cursor-pointer border-none bg-transparent"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Purge Cart Buffer</span>
+              <span>Clear Cart</span>
             </button>
           </div>
 
@@ -116,68 +116,68 @@ const Cart = () => {
           <div className="space-y-6">
             
             {/* Summary Box */}
-            <div className="bg-white border border-stone-100 rounded-3xl p-6 space-y-6 shadow-sm text-left">
-              <h3 className="text-base font-bold font-sans uppercase tracking-wider text-stone-800 border-b border-stone-100 pb-3">
-                Order Invoice
+            <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-6 shadow-sm text-left">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-gray-900 border-b border-gray-150 pb-3">
+                Order Summary
               </h3>
 
               {/* Price Rows */}
-              <div className="space-y-3 font-mono text-xs">
-                <div className="flex justify-between text-stone-500">
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between text-gray-500">
                   <span>Subtotal</span>
-                  <span className="text-stone-800 font-bold">{formatMoney(cartSubtotal)}</span>
+                  <span className="text-gray-900 font-semibold">{formatMoney(cartSubtotal)}</span>
                 </div>
                 
                 {discountCost > 0 && (
-                  <div className="flex justify-between text-emerald-600 font-bold">
-                    <span>Matrix Promo (10%)</span>
+                  <div className="flex justify-between text-green-600 font-bold">
+                    <span>Discount (10%)</span>
                     <span>-{formatMoney(discountCost)}</span>
                   </div>
                 )}
 
-                <div className="flex justify-between text-stone-505">
-                  <span>Priority Shipping</span>
+                <div className="flex justify-between text-gray-500">
+                  <span>Shipping</span>
                   {shippingCost === 0 ? (
-                    <span className="text-emerald-600 uppercase font-bold">FREE DISPATCH</span>
+                    <span className="text-green-600 font-bold">FREE</span>
                   ) : (
-                    <span className="text-stone-800 font-bold">{formatMoney(shippingCost)}</span>
+                    <span className="text-gray-900 font-semibold">{formatMoney(shippingCost)}</span>
                   )}
                 </div>
 
-                <div className="flex justify-between text-stone-500">
-                  <span>Estimated Tax (8%)</span>
-                  <span className="text-stone-800 font-bold">{formatMoney(taxCost)}</span>
+                <div className="flex justify-between text-gray-500">
+                  <span>Tax (8%)</span>
+                  <span className="text-gray-900 font-semibold">{formatMoney(taxCost)}</span>
                 </div>
 
                 {shippingCost > 0 && (
-                  <p className="text-[10px] text-stone-400 flex items-start space-x-1 pt-1 font-sans leading-relaxed">
-                    <Info className="w-3.5 h-3.5 text-orange-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-gray-400 flex items-start space-x-1.5 pt-1 font-sans leading-relaxed">
+                    <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
                     <span>Free shipping threshold is $500. Add {formatMoney(500 - cartSubtotal)} more to save on shipping.</span>
                   </p>
                 )}
               </div>
 
               {/* Final total amount */}
-              <div className="border-t border-stone-100 pt-4 flex justify-between items-center font-mono">
-                <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">Net Total</span>
-                <span className="text-2xl font-black text-orange-600">{formatMoney(finalTotal)}</span>
+              <div className="border-t border-gray-200 pt-4 flex justify-between items-center">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Estimated Total</span>
+                <span className="text-2xl font-bold text-blue-600">{formatMoney(finalTotal)}</span>
               </div>
 
               {/* Action Buttons */}
               <button
                 onClick={() => navigate("/checkout", { state: { discountRate } })}
-                className="w-full bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white font-mono text-xs py-4 rounded-2xl font-bold uppercase transition-all duration-150 flex items-center justify-center space-x-2 shadow-sm hover:shadow cursor-pointer border border-orange-500/20"
+                className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-sans text-xs py-3.5 rounded-lg font-bold uppercase transition-all duration-150 flex items-center justify-center space-x-2 shadow-sm cursor-pointer border-none"
               >
-                <span>Compile Checkout</span>
+                <span>Proceed to Checkout</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
 
             {/* Promo Code Box */}
-            <div className="bg-white border border-stone-100 rounded-3xl p-6 space-y-3 shadow-sm text-left">
-              <label className="text-xs font-semibold uppercase text-stone-505 tracking-wider flex items-center space-x-1.5">
-                <Tag className="w-3.5 h-3.5 text-orange-600" />
-                <span>Clearance Voucher</span>
+            <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-3 shadow-sm text-left">
+              <label className="text-xs font-semibold uppercase text-gray-700 tracking-wider flex items-center space-x-1.5">
+                <Tag className="w-3.5 h-3.5 text-blue-600" />
+                <span>Promo Code</span>
               </label>
               
               <form onSubmit={handleApplyPromo} className="flex gap-2">
@@ -186,21 +186,21 @@ const Cart = () => {
                   value={promoInput}
                   onChange={(e) => setPromoInput(e.target.value)}
                   placeholder="Enter TECH10"
-                  className="flex-grow bg-stone-50 border border-stone-200 focus:border-orange-500/30 rounded-2xl py-2.5 px-4 text-xs text-stone-850 placeholder-stone-400 focus:outline-none uppercase font-mono transition-colors"
+                  className="flex-grow bg-gray-50 border border-gray-200 focus:border-blue-500 rounded-lg py-2 px-3 text-xs text-gray-800 placeholder-gray-400 focus:outline-none uppercase transition-colors"
                 />
                 <button
                   type="submit"
-                  className="bg-stone-100 hover:bg-stone-200 active:bg-stone-250 text-stone-700 font-mono text-[10px] px-4 py-2.5 border border-stone-200 rounded-2xl font-bold transition-all duration-150 cursor-pointer"
+                  className="bg-white hover:bg-gray-50 text-gray-700 font-sans text-xs px-4 py-2 border border-gray-200 hover:border-gray-300 rounded-lg font-semibold transition-all duration-150 cursor-pointer"
                 >
-                  APPLY
+                  Apply
                 </button>
               </form>
 
               {promoError && (
-                <p className="text-xs text-red-600 font-mono pl-1">{promoError}</p>
+                <p className="text-xs text-red-600 pl-1 font-semibold">{promoError}</p>
               )}
               {promoSuccess && (
-                <p className="text-xs text-emerald-600 font-mono pl-1">{promoSuccess}</p>
+                <p className="text-xs text-green-600 pl-1 font-semibold">{promoSuccess}</p>
               )}
             </div>
 

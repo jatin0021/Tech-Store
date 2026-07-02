@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { makeMockModel } from "../config/mockDb.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -52,6 +53,8 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-const User = mongoose.model("User", userSchema);
+const User = process.env.MOCK_DB === "true" 
+  ? makeMockModel("User") 
+  : mongoose.model("User", userSchema);
 
 export default User;

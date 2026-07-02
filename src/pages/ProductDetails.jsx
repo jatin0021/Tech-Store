@@ -251,9 +251,9 @@ const ProductDetails = () => {
     return (
       <div className="container mx-auto px-4 py-20 text-center space-y-4">
         <p className="text-red-500 font-mono text-base uppercase">Error: {error || "Signature mismatch."}</p>
-        <Link to="/" className="inline-flex items-center space-x-2 text-orange-600 hover:text-orange-700 font-mono text-sm uppercase">
+        <Link to="/collections" className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-sans text-sm font-semibold uppercase">
           <ArrowLeft className="w-4 h-4" />
-          <span>Return to Homepage</span>
+          <span>Return to Catalog</span>
         </Link>
       </div>
     );
@@ -276,12 +276,12 @@ const ProductDetails = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-12 animate-fadeIn text-stone-800">
+    <div className="container mx-auto px-4 py-8 space-y-12 animate-fadeIn text-gray-800">
       
       {/* Back Button */}
-      <Link to="/" className="inline-flex items-center space-x-2 text-stone-400 hover:text-orange-600 transition-colors font-mono text-xs uppercase tracking-wider">
+      <Link to="/collections" className="inline-flex items-center space-x-2 text-gray-400 hover:text-blue-600 transition-colors font-sans text-xs uppercase tracking-wider font-semibold">
         <ArrowLeft className="w-4 h-4" />
-        <span>Return to Node Grid</span>
+        <span>Back to Collections</span>
       </Link>
 
       {/* Grid Layout (Splits image gallery & details info) */}
@@ -289,14 +289,14 @@ const ProductDetails = () => {
         
         {/* Left Column: Product Visual Gallery */}
         <div className="space-y-4">
-          <div className="bg-white border border-stone-100 rounded-[28px] p-6 shadow-sm space-y-4">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
             
             {/* Main Interactive Zoom Image */}
             <div
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
-              className="relative aspect-square rounded-2xl overflow-hidden bg-stone-50 flex items-center justify-center border border-stone-100 cursor-zoom-in"
+              className="relative aspect-square rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center border border-gray-150 cursor-zoom-in"
             >
               <img
                 src={activeImage}
@@ -307,18 +307,18 @@ const ProductDetails = () => {
                 }}
                 className="w-full h-full object-cover transition-transform duration-100 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-900/5 to-transparent pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-950/5 to-transparent pointer-events-none"></div>
             </div>
 
             {/* Gallery Thumbnail Slider */}
             {images?.length > 1 && (
-              <div className="flex gap-2.5 overflow-x-auto py-1">
+              <div className="flex gap-2.5 overflow-x-auto py-1 no-scrollbar">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImage(img)}
-                    className={`w-16 h-16 rounded-xl overflow-hidden bg-stone-50 border flex-shrink-0 cursor-pointer ${
-                      activeImage === img ? "border-orange-600" : "border-stone-200"
+                    className={`w-16 h-16 rounded-lg overflow-hidden bg-gray-50 border flex-shrink-0 cursor-pointer ${
+                      activeImage === img ? "border-blue-600" : "border-gray-200"
                     }`}
                   >
                     <img src={img} alt={`thumb-${idx}`} className="w-full h-full object-cover" />
@@ -327,9 +327,9 @@ const ProductDetails = () => {
               </div>
             )}
 
-            <div className="flex justify-between items-center text-[10px] text-stone-400 font-mono px-2">
-              <span>Category: <span className="text-orange-600 uppercase font-bold">{category?.name || "Uncategorized"}</span></span>
-              <span>SKU ID: {product._id?.substring(18).toUpperCase()}-TECH</span>
+            <div className="flex justify-between items-center text-[11px] text-gray-400 font-sans px-1 font-semibold">
+              <span>Category: <span className="text-blue-600 uppercase">{category?.name || "Uncategorized"}</span></span>
+              <span>SKU: {product._id?.substring(18).toUpperCase()}-TECH</span>
             </div>
           </div>
         </div>
@@ -338,37 +338,37 @@ const ProductDetails = () => {
         <div className="space-y-6 text-left">
           
           {/* Badge & Title */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-3">
+          <div className="space-y-2.5">
+            <div className="flex items-center space-x-2.5">
               {stock > 0 ? (
-                <span className="bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full text-[10px] text-emerald-600 font-sans uppercase font-bold tracking-wider">
+                <span className="bg-green-50 border border-green-100 px-2.5 py-0.5 rounded text-[10px] text-green-600 font-sans uppercase font-bold tracking-wider">
                   In Stock
                 </span>
               ) : (
-                <span className="bg-red-50 border border-red-105 px-2.5 py-1 rounded-full text-[10px] text-red-600 font-sans uppercase font-bold tracking-wider">
+                <span className="bg-red-50 border border-red-100 px-2.5 py-0.5 rounded text-[10px] text-red-600 font-sans uppercase font-bold tracking-wider">
                   Out of Stock
                 </span>
               )}
 
               {stock <= 5 && stock > 0 && (
-                <span className="text-amber-655 font-semibold text-xs animate-pulse">
-                  Only {stock} units left!
+                <span className="text-amber-600 font-semibold text-xs animate-pulse">
+                  Only {stock} Left!
                 </span>
               )}
 
               {hasDiscount && (
-                <span className="bg-emerald-50 border border-emerald-100 text-[10px] text-emerald-600 font-bold px-2.5 py-1 rounded-full uppercase">
+                <span className="bg-green-50 border border-green-100 text-[10px] text-green-600 font-bold px-2.5 py-0.5 rounded uppercase">
                   Save {formatMoney(price - discountPrice)}
                 </span>
               )}
             </div>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-stone-900 leading-tight">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
               {title}
             </h1>
           </div>
 
           {/* Rating Summary */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <div className="flex items-center text-amber-400">
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
@@ -376,51 +376,51 @@ const ProductDetails = () => {
                   className={`w-4 h-4 ${
                     i < Math.round(rating)
                       ? "fill-amber-400 text-amber-400"
-                      : "text-stone-200"
+                      : "text-gray-200"
                   }`}
                 />
               ))}
             </div>
-            <span className="text-sm text-stone-500 font-bold font-mono">{rating} stars</span>
-            <span className="text-stone-200">|</span>
-            <span className="text-xs text-stone-400 font-mono uppercase">{reviewsCount} Database Audits</span>
+            <span className="text-sm text-gray-700 font-semibold">{rating} stars</span>
+            <span className="text-gray-200">|</span>
+            <span className="text-xs text-gray-400 uppercase font-semibold">{reviewsCount} Audits</span>
           </div>
 
           {/* Price Tag */}
-          <div className="flex items-baseline space-x-3 font-mono">
-            <span className="text-3xl font-black text-stone-905 tracking-tight">{formatMoney(currentPrice)}</span>
+          <div className="flex items-baseline space-x-3 font-sans">
+            <span className="text-3xl font-bold text-gray-900 tracking-tight">{formatMoney(currentPrice)}</span>
             {hasDiscount && (
-              <span className="text-sm text-stone-450 line-through">{formatMoney(price)}</span>
+              <span className="text-sm text-gray-400 line-through font-medium">{formatMoney(price)}</span>
             )}
           </div>
 
           {/* Description */}
-          <p className="text-stone-500 text-sm leading-relaxed font-sans">{description}</p>
+          <p className="text-gray-500 text-sm leading-relaxed font-sans font-normal">{description}</p>
 
           {/* Selection Module */}
-          <div className="bg-white border border-stone-100 rounded-[28px] p-6 space-y-4 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 space-y-4 shadow-sm">
             
             {stock > 0 && (
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase text-stone-405 tracking-wider">Unit Quantity</span>
+                <span className="text-xs font-bold uppercase text-gray-500 tracking-wider">Quantity</span>
                 
                 {/* Custom quantity selectors */}
-                <div className="flex items-center space-x-1.5 bg-stone-50 p-1 rounded-2xl border border-stone-200">
+                <div className="flex items-center space-x-1.5 bg-gray-50 p-1 rounded-lg border border-gray-200 shadow-sm">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
-                    className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                      quantity <= 1 ? "text-stone-300 cursor-not-allowed" : "text-stone-500 hover:text-stone-800"
+                    className={`p-1.5 rounded transition-colors cursor-pointer border-none bg-transparent ${
+                      quantity <= 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-500 hover:text-gray-800"
                     }`}
                   >
                     -
                   </button>
-                  <span className="w-8 text-center font-mono font-bold text-stone-850 text-sm">{quantity}</span>
+                  <span className="w-8 text-center font-bold text-gray-900 text-sm">{quantity}</span>
                   <button
                     onClick={() => setQuantity((q) => Math.min(stock, q + 1))}
                     disabled={quantity >= stock}
-                    className={`p-2 rounded-xl transition-colors cursor-pointer ${
-                      quantity >= stock ? "text-stone-300 cursor-not-allowed" : "text-stone-500 hover:text-stone-800"
+                    className={`p-1.5 rounded transition-colors cursor-pointer border-none bg-transparent ${
+                      quantity >= stock ? "text-gray-300 cursor-not-allowed" : "text-gray-500 hover:text-gray-800"
                     }`}
                   >
                     +
@@ -433,34 +433,34 @@ const ProductDetails = () => {
             {stock > 0 ? (
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-orange-600 hover:bg-orange-700 active:bg-orange-800 text-white text-xs py-4 rounded-2xl font-bold uppercase tracking-wider transition-all duration-150 flex items-center justify-center space-x-2 shadow-sm hover:shadow cursor-pointer border border-orange-500/20"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-3.5 rounded-lg font-semibold uppercase tracking-wider transition-colors duration-150 flex items-center justify-center space-x-2 shadow-sm border-none cursor-pointer"
               >
                 <ShoppingCart className="w-4 h-4" />
-                <span>Initialize Add to Cart</span>
+                <span>Add To Cart</span>
               </button>
             ) : (
               <button
                 disabled
-                className="w-full bg-stone-50 text-stone-400 border border-stone-100 text-xs py-4 rounded-2xl font-bold uppercase cursor-not-allowed flex items-center justify-center space-x-2"
+                className="w-full bg-gray-100 text-gray-400 border border-gray-200 text-sm py-3.5 rounded-lg font-semibold uppercase cursor-not-allowed flex items-center justify-center space-x-2"
               >
-                <span>Hardware Depleted</span>
+                <span>Sold Out</span>
               </button>
             )}
 
           </div>
 
           {/* Quick trust metrics */}
-          <div className="grid grid-cols-3 gap-2 py-4 border border-stone-100 rounded-2xl p-4 bg-white text-[10px] text-stone-500 uppercase font-bold tracking-wider shadow-sm">
-            <div className="flex items-center space-x-1.5 justify-center border-r border-stone-100">
-              <ShieldCheck className="w-4 h-4 text-orange-600 flex-shrink-0" />
+          <div className="grid grid-cols-3 gap-2 py-4 border border-gray-200 rounded-xl p-4 bg-white text-[10px] text-gray-500 uppercase font-bold tracking-wider shadow-sm">
+            <div className="flex items-center space-x-1.5 justify-center border-r border-gray-200">
+              <ShieldCheck className="w-4 h-4 text-blue-600 flex-shrink-0" />
               <span>Full Warranty</span>
             </div>
-            <div className="flex items-center space-x-1.5 justify-center border-r border-stone-100">
-              <Truck className="w-4 h-4 text-orange-600 flex-shrink-0" />
-              <span>Secure Dispatch</span>
+            <div className="flex items-center space-x-1.5 justify-center border-r border-gray-200">
+              <Truck className="w-4 h-4 text-blue-600 flex-shrink-0" />
+              <span>Secure Shipping</span>
             </div>
             <div className="flex items-center space-x-1.5 justify-center">
-              <RefreshCw className="w-4 h-4 text-orange-600 flex-shrink-0" />
+              <RefreshCw className="w-4 h-4 text-blue-600 flex-shrink-0" />
               <span>30 Day Swap</span>
             </div>
           </div>
@@ -469,18 +469,18 @@ const ProductDetails = () => {
       </div>
 
       {/* 4. Tabbed Information Deck (Specs / Reviews / Overview) */}
-      <section className="bg-white border border-stone-100 rounded-[28px] p-6 md:p-8 space-y-6 shadow-sm text-left">
+      <section className="bg-white border border-gray-200 rounded-xl p-6 md:p-8 space-y-6 shadow-sm text-left">
         
         {/* Tab Buttons */}
-        <div className="flex space-x-4 border-b border-stone-100 pb-2 overflow-x-auto">
+        <div className="flex space-x-6 border-b border-gray-200 pb-2 overflow-x-auto no-scrollbar">
           {["overview", "specifications", "reviews"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`pb-3 font-semibold text-xs uppercase tracking-widest transition-colors cursor-pointer border-b-2 px-1 whitespace-nowrap ${
+              className={`pb-3 font-semibold text-xs uppercase tracking-widest transition-colors cursor-pointer border-b-2 px-1 whitespace-nowrap border-none bg-transparent ${
                 activeTab === tab
-                  ? "border-orange-500 text-orange-600"
-                  : "border-transparent text-stone-405 hover:text-stone-705"
+                  ? "border-b-2! border-blue-600 text-blue-600"
+                  : "text-gray-400 hover:text-gray-700"
               }`}
             >
               {tab}
@@ -493,34 +493,34 @@ const ProductDetails = () => {
           {activeTab === "overview" && (
             <ul className="space-y-4">
               {features?.map((feat, idx) => (
-                <li key={idx} className="flex items-start space-x-3 text-sm text-stone-600">
-                  <Check className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                <li key={idx} className="flex items-start space-x-3 text-sm text-gray-600">
+                  <Check className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <span>{feat}</span>
                 </li>
               ))}
               {(!features || features.length === 0) && (
-                <p className="text-xs text-stone-400 font-mono">No special features listed for this node.</p>
+                <p className="text-sm text-gray-450">No special features listed for this node.</p>
               )}
             </ul>
           )}
 
           {activeTab === "specifications" && (
-            <div className="overflow-x-auto border border-stone-100 rounded-2xl bg-stone-50/50">
+            <div className="overflow-x-auto border border-gray-200 rounded-lg bg-gray-50/50">
               <table className="w-full text-left border-collapse text-sm">
                 <tbody>
                   {Object.entries(specifications || {}).map(([key, val], idx) => (
-                    <tr key={key} className={idx % 2 === 0 ? "bg-stone-50/30" : "bg-white"}>
-                      <td className="p-4 font-bold text-xs uppercase text-stone-500 w-1/3 border-b border-stone-100">
+                    <tr key={key} className={idx % 2 === 0 ? "bg-gray-50/20" : "bg-white"}>
+                      <td className="p-4 font-bold text-xs uppercase text-gray-500 w-1/3 border-b border-gray-100">
                         {key}
                       </td>
-                      <td className="p-4 text-stone-700 text-xs border-b border-stone-100">
+                      <td className="p-4 text-gray-700 text-xs border-b border-gray-100">
                         {val}
                       </td>
                     </tr>
                   ))}
                   {(!specifications || Object.keys(specifications).length === 0) && (
                     <tr>
-                      <td className="p-4 text-xs text-stone-450 font-mono">No custom specifications cataloged.</td>
+                      <td className="p-4 text-xs text-gray-400">No custom specifications cataloged.</td>
                     </tr>
                   )}
                 </tbody>
@@ -534,24 +534,24 @@ const ProductDetails = () => {
               {/* Dynamic Review Submission Box */}
               {isAuthenticated ? (
                 (!userHasReview || editingReviewId) ? (
-                  <form onSubmit={handleReviewSubmit} className="p-6 bg-stone-50/50 border border-stone-200/80 rounded-3xl space-y-4 max-w-xl">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-orange-655 flex items-center gap-1.5">
-                      <MessageSquareHeart className="w-4 h-4 text-orange-600" />
+                  <form onSubmit={handleReviewSubmit} className="p-5 bg-gray-50/50 border border-gray-200 rounded-xl space-y-4 max-w-xl">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1.5">
+                      <MessageSquareHeart className="w-4 h-4 text-blue-600" />
                       <span>{editingReviewId ? "Update Review Details" : "Record Review Details"}</span>
                     </h4>
 
                     {/* Star selection widget */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase text-stone-400 font-bold">Star Rating</label>
+                      <label className="text-[10px] uppercase text-gray-400 font-bold">Star Rating</label>
                       <div className="flex gap-1.5">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
                             key={star}
                             type="button"
                             onClick={() => setRatingInput(star)}
-                            className="text-amber-400 hover:scale-110 transition-transform cursor-pointer"
+                            className="text-amber-400 hover:scale-110 transition-transform cursor-pointer border-none bg-transparent"
                           >
-                            <Star className={`w-6 h-6 ${star <= ratingInput ? "fill-amber-400" : "text-stone-200"}`} />
+                            <Star className={`w-6 h-6 ${star <= ratingInput ? "fill-amber-400 text-amber-400" : "text-gray-200"}`} />
                           </button>
                         ))}
                       </div>
@@ -559,14 +559,14 @@ const ProductDetails = () => {
 
                     {/* Comment text */}
                     <div className="space-y-1.5">
-                      <label className="text-[10px] uppercase text-stone-400 font-bold">Audit Comment</label>
+                      <label className="text-[10px] uppercase text-gray-400 font-bold">Audit Comment</label>
                       <textarea
                         rows="3"
                         required
                         placeholder="Write your review..."
                         value={commentInput}
                         onChange={(e) => setCommentInput(e.target.value)}
-                        className="w-full bg-white border border-stone-200 focus:border-orange-500/30 rounded-2xl py-3 px-4 text-xs text-stone-800 focus:outline-none"
+                        className="w-full bg-white border border-gray-200 focus:border-blue-500 rounded-lg py-2.5 px-3.5 text-xs text-gray-800 focus:outline-none"
                       ></textarea>
                     </div>
 
@@ -574,7 +574,7 @@ const ProductDetails = () => {
                       <button
                         type="submit"
                         disabled={isSubmittingReview}
-                        className="bg-orange-600 hover:bg-orange-700 disabled:opacity-50 text-white text-xs py-2.5 px-5 rounded-2xl font-bold uppercase transition-colors cursor-pointer flex items-center space-x-1.5 border border-orange-500/20"
+                        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs py-2 px-4 rounded-lg font-bold uppercase transition-colors cursor-pointer flex items-center space-x-1.5 border-none shadow-sm"
                       >
                         <Send className="w-3.5 h-3.5" />
                         <span>{editingReviewId ? "Sync Details" : "Submit Details"}</span>
@@ -587,7 +587,7 @@ const ProductDetails = () => {
                             setCommentInput("");
                             setRatingInput(5);
                           }}
-                          className="bg-white border border-stone-200 hover:bg-stone-50 text-stone-400 text-xs py-2.5 px-4 rounded-2xl transition-colors cursor-pointer"
+                          className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-400 text-xs py-2 px-3 rounded-lg transition-colors cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -595,14 +595,14 @@ const ProductDetails = () => {
                     </div>
                   </form>
                 ) : (
-                  <div className="p-4 bg-orange-50 border border-orange-100/50 rounded-2xl text-[11px] text-orange-655 uppercase font-bold">
+                  <div className="p-4 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-600 uppercase font-semibold">
                     You have already submitted a review for this product. You can update or delete it below.
                   </div>
                 )
               ) : (
-                <div className="p-5 bg-stone-50 border border-stone-100 rounded-2xl text-xs text-stone-400 flex justify-between items-center font-mono">
+                <div className="p-5 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-400 flex justify-between items-center">
                   <span>Authentication required to submit review.</span>
-                  <Link to="/login" className="text-orange-600 font-bold uppercase hover:text-orange-500">Login Profile</Link>
+                  <Link to="/login" className="text-blue-600 font-bold uppercase hover:text-blue-500">Login Profile</Link>
                 </div>
               )}
 
@@ -615,17 +615,17 @@ const ProductDetails = () => {
                     const isOwnerOrAdmin = isOwnReview || user?.role === "admin";
 
                     return (
-                      <div key={rev._id} className="p-5 bg-stone-50/30 border border-stone-100 rounded-2xl space-y-3 relative">
+                      <div key={rev._id} className="p-5 bg-gray-50/20 border border-gray-200 rounded-lg space-y-3 relative">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-stone-800 font-bold">{reviewerName}</span>
-                          <span className="text-stone-400 font-mono">{new Date(rev.createdAt).toLocaleDateString()}</span>
+                          <span className="text-gray-800 font-bold">{reviewerName}</span>
+                          <span className="text-gray-400">{new Date(rev.createdAt).toLocaleDateString()}</span>
                         </div>
                         <div className="flex text-amber-400">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} className={`w-3.5 h-3.5 ${i < rev.rating ? "fill-amber-400 text-amber-400" : "text-stone-200"}`} />
+                            <Star key={i} className={`w-3.5 h-3.5 ${i < rev.rating ? "fill-amber-400 text-amber-400" : "text-gray-200"}`} />
                           ))}
                         </div>
-                        <p className="text-sm text-stone-600 leading-relaxed font-sans">{rev.comment}</p>
+                        <p className="text-sm text-gray-600 leading-relaxed font-sans">{rev.comment}</p>
 
                         {/* Edit/Delete control tags for owners and admin */}
                         {isOwnerOrAdmin && (
@@ -633,7 +633,7 @@ const ProductDetails = () => {
                             {isOwnReview && (
                               <button
                                 onClick={() => handleEditClick(rev)}
-                                className="p-1.5 bg-white border border-stone-200 hover:bg-stone-50 rounded-lg text-orange-600 cursor-pointer"
+                                className="p-1.5 bg-white border border-stone-200 hover:bg-stone-50 rounded-lg text-blue-600 cursor-pointer"
                                 title="Edit review"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -652,7 +652,7 @@ const ProductDetails = () => {
                     );
                   })
                 ) : (
-                  <p className="text-xs text-stone-400 font-mono">No reviews are currently cataloged for this node.</p>
+                  <p className="text-xs text-gray-400">No reviews are currently cataloged for this node.</p>
                 )}
               </div>
             </div>
@@ -664,8 +664,8 @@ const ProductDetails = () => {
       {/* 5. Related Products */}
       {relatedProducts.length > 0 && (
         <section className="space-y-6 pt-4 text-left">
-          <h3 className="text-xl font-bold uppercase tracking-tight text-stone-850 border-l-4 border-orange-500 pl-3">
-            Related Hardware Nodes
+          <h3 className="text-xl font-bold uppercase tracking-tight text-gray-900 border-l-4 border-blue-600 pl-3">
+            Related Hardware Products
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedProducts.map((p) => (
@@ -677,9 +677,9 @@ const ProductDetails = () => {
 
       {/* 6. Recently Viewed Products */}
       {recentlyViewed.length > 0 && (
-        <section className="space-y-6 pt-4 border-t border-stone-100 text-left">
-          <h3 className="text-xl font-bold uppercase tracking-tight text-stone-850 border-l-4 border-orange-500 pl-3">
-            Recently Viewed Nodes
+        <section className="space-y-6 pt-4 border-t border-gray-200 text-left">
+          <h3 className="text-xl font-bold uppercase tracking-tight text-gray-900 border-l-4 border-blue-600 pl-3">
+            Recently Viewed Products
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {recentlyViewed.map((p) => (

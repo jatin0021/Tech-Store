@@ -3,28 +3,27 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import connectDB from "./config/db.js";
-import { configureCloudinary } from "./config/cloudinary.js";
-
-// Routes imports
-import authRoutes from "./routes/authRoutes.js";
-import categoryRoutes from "./routes/categoryRoutes.js";
-import productRoutes from "./routes/productRoutes.js";
-import cartRoutes from "./routes/cartRoutes.js";
-import wishlistRoutes from "./routes/wishlistRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
-import reviewRoutes from "./routes/reviewRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load env variables
+// 1. Load env variables first
 dotenv.config();
 
-// Connect to Database
-connectDB();
+// 2. Connect to Database / Mock Setup next (using ESM top-level await)
+import connectDB from "./config/db.js";
+await connectDB();
 
-// Configure Cloudinary media cloud
+// 3. Now dynamically import the route modules (so they get the fully resolved process.env.MOCK_DB flag)
+const authRoutes = (await import("./routes/authRoutes.js")).default;
+const categoryRoutes = (await import("./routes/categoryRoutes.js")).default;
+const productRoutes = (await import("./routes/productRoutes.js")).default;
+const cartRoutes = (await import("./routes/cartRoutes.js")).default;
+const wishlistRoutes = (await import("./routes/wishlistRoutes.js")).default;
+const orderRoutes = (await import("./routes/orderRoutes.js")).default;
+const reviewRoutes = (await import("./routes/reviewRoutes.js")).default;
+
+import { configureCloudinary } from "./config/cloudinary.js";
 configureCloudinary();
 
 const app = express();

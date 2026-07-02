@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { makeMockModel } from "../config/mockDb.js";
 
 const categorySchema = new mongoose.Schema(
   {
@@ -20,6 +21,8 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-const Category = mongoose.model("Category", categorySchema);
+const Category = process.env.MOCK_DB === "true" 
+  ? makeMockModel("Category") 
+  : mongoose.model("Category", categorySchema);
 
 export default Category;

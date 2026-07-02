@@ -1,19 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+@theme {
+  --color-stone-850: #111827;
+  --color-stone-800: #1f2937;
+  --color-stone-550: #6b7280;
+  --color-stone-150: #e5e7eb;
+  --color-orange-655: #2563eb;
+  --color-orange-600: #2563eb;
+  --color-orange-500: #2563eb;
+  --color-orange-100: #dbeafe;
+  --color-orange-50: #eff6ff;
+  
+  --font-sans: 'Inter', sans-serif;
+}
 
 body {
-  background-color: #fafaf9; /* warm stone-50 */
-  color: #1c1917; /* stone-900 */
+  background-color: #f8fafc; /* bg-slate-50 */
+  color: #111827; /* text-slate-900 */
   font-family: 'Inter', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, .font-serif-lux {
-  font-family: 'Playfair Display', serif;
-  letter-spacing: -0.01em;
-}
-
-.font-sans-title {
-  font-family: 'Outfit', sans-serif;
+h1, h2, h3, h4, h5, h6, .font-serif-lux, .font-sans-title {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Custom fade-in and scale-up micro-animations */

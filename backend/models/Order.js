@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { makeMockModel } from "../config/mockDb.js";
 
 const orderSchema = new mongoose.Schema(
   {
@@ -48,6 +49,8 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = process.env.MOCK_DB === "true" 
+  ? makeMockModel("Order") 
+  : mongoose.model("Order", orderSchema);
 
 export default Order;

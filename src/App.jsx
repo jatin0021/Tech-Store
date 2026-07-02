@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation, Link } from "react-router-dom";
 import ProductList from "./pages/ProductList.jsx";
+import About from "./pages/About.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Cart from "./pages/Cart.jsx";
@@ -90,7 +91,8 @@ function App() {
             <main className="flex-grow">
               <Routes>
                 {/* Public Storefront Routes */}
-                <Route path="/" element={<ProductList />} />
+                <Route path="/" element={<About />} />
+                <Route path="/collections" element={<ProductList />} />
                 <Route path="/product/:id" element={<ProductDetails />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/help" element={<Help />} />
