@@ -20,12 +20,14 @@ const ProductCard = ({ product }) => {
   const currentPrice = hasDiscount ? discountPrice : price;
 
   // Handle Add To Cart
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (stock > 0) {
-      addToCart(product, 1);
-      toast.success(`Added ${name} to your cart!`);
+      const added = await addToCart(product, 1);
+      if (added) {
+        toast.success(`Added ${name} to your cart!`);
+      }
     }
   };
 

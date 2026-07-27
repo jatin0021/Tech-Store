@@ -8,18 +8,41 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
   const [cart, setCart] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // 1. Fetch cart from Database or local storage depending on auth status
+  // 1. Fetch, load, and merge cart depending on auth status
   useEffect(() => {
-    const loadCart = async () => {
+    const syncCartState = async () => {
+      console.log("[CartContext] syncCartState running. isAuthenticated:", isAuthenticated);
       setIsLoading(true);
       if (isAuthenticated) {
         try {
+          // Check for any guest items in localStorage to merge
+          const savedCart = localStorage.getItem("tech_store_cart");
+          console.log("[CartContext] savedCart guest items:", savedCart);
+          if (savedCart) {
+            const localItems = JSON.parse(savedCart);
+            if (localItems.length > 0) {
+              // Post each local item to the DB cart sequentially
+              for (const item of localItems) {
+                console.log("[CartContext] Syncing guest item to DB:", item);
+                await apiClient.post("/cart", {
+                  productId: item.product._id || item.product.id,
+                  quantity: item.quantity,
+                });
+              }
+              // Clear guest cart from localstorage
+              localStorage.removeItem("tech_store_cart");
+              toast.success("Guest items synced with your profile!");
+            }
+          }
+          // Fetch final database cart
+          console.log("[CartContext] Fetching DB cart...");
           const res = await apiClient.get("/cart");
+          console.log("[CartContext] DB cart response data:", res.data);
           setCart(res.data.items || []);
         } catch (error) {
-          console.error("Failed to load cart from DB:", error);
+          console.error("[CartContext] Failed to load/merge cart with DB:", error);
           toast.error("Could not sync cart with database.");
         }
       } else {
@@ -27,74 +50,46 @@ export const CartProvider = ({ children }) => {
         try {
           const savedCart = localStorage.getItem("tech_store_cart");
           if (savedCart) {
-            // Map local structure to DB structure: { product: {...}, quantity: X }
             setCart(JSON.parse(savedCart));
           } else {
             setCart([]);
           }
         } catch (e) {
-          console.error("Failed to parse local guest cart:", e);
+          console.error("[CartContext] Failed to parse local guest cart:", e);
           setCart([]);
         }
       }
       setIsLoading(false);
     };
 
-    loadCart();
-  }, [isAuthenticated, user]);
+    syncCartState();
+  }, [isAuthenticated]);
 
-  // 2. Local storage synchronization for guest users only
+  // 2. Local storage synchronization for guest users only (runs after load/update finishes)
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !isLoading) {
       localStorage.setItem("tech_store_cart", JSON.stringify(cart));
     }
-  }, [cart, isAuthenticated]);
-
-  // 3. Merge guest local cart items to DB cart upon user authentication
-  useEffect(() => {
-    const mergeCart = async () => {
-      if (isAuthenticated) {
-        const savedCart = localStorage.getItem("tech_store_cart");
-        if (savedCart) {
-          const localItems = JSON.parse(savedCart);
-          if (localItems.length > 0) {
-            try {
-              for (const item of localItems) {
-                // Post each local item to the DB cart
-                await apiClient.post("/cart", {
-                  productId: item.product._id || item.product.id,
-                  quantity: item.quantity,
-                });
-              }
-              // Clear guest cart
-              localStorage.removeItem("tech_store_cart");
-              // Refresh database cart
-              const res = await apiClient.get("/cart");
-              setCart(res.data.items || []);
-              toast.success("Guest items synced with your profile!");
-            } catch (err) {
-              console.error("Failed to merge guest cart to DB:", err);
-            }
-          }
-        }
-      }
-    };
-
-    mergeCart();
-  }, [isAuthenticated]);
+  }, [cart, isAuthenticated, isLoading]);
 
   // Add a product to the cart
   const addToCart = async (product, quantity = 1) => {
     const productId = product._id || product.id;
+    console.log("[CartContext] addToCart called:", { product, productId, quantity });
     if (isAuthenticated) {
       try {
+        console.log("[CartContext] Sending POST /cart...");
         const res = await apiClient.post("/cart", {
           productId,
           quantity,
         });
+        console.log("[CartContext] POST /cart success. Response:", res.data);
         setCart(res.data.items || []);
+        return true;
       } catch (error) {
+        console.error("[CartContext] POST /cart failed:", error);
         toast.error(error.message || "Failed to add item to DB cart.");
+        return false;
       }
     } else {
       setCart((prevCart) => {
@@ -115,16 +110,21 @@ export const CartProvider = ({ children }) => {
           ];
         }
       });
+      return true;
     }
   };
 
   // Remove a product from the cart
   const removeFromCart = async (productId) => {
+    console.log("[CartContext] removeFromCart called. productId:", productId);
     if (isAuthenticated) {
       try {
+        console.log("[CartContext] Sending DELETE /cart/:id...");
         const res = await apiClient.delete(`/cart/${productId}`);
+        console.log("[CartContext] DELETE /cart/:id success. Response:", res.data);
         setCart(res.data.items || []);
       } catch (error) {
+        console.error("[CartContext] DELETE /cart/:id failed:", error);
         toast.error("Failed to delete item from DB cart.");
       }
     } else {
@@ -136,6 +136,7 @@ export const CartProvider = ({ children }) => {
 
   // Update quantity of an item directly
   const updateQuantity = async (productId, quantity) => {
+    console.log("[CartContext] updateQuantity called:", { productId, quantity });
     if (quantity <= 0) {
       await removeFromCart(productId);
       return;
@@ -143,9 +144,12 @@ export const CartProvider = ({ children }) => {
 
     if (isAuthenticated) {
       try {
+        console.log("[CartContext] Sending PUT /cart/:id...");
         const res = await apiClient.put(`/cart/${productId}`, { quantity });
+        console.log("[CartContext] PUT /cart/:id success. Response:", res.data);
         setCart(res.data.items || []);
       } catch (error) {
+        console.error("[CartContext] PUT /cart/:id failed:", error);
         toast.error("Failed to update item quantity.");
       }
     } else {
@@ -178,7 +182,7 @@ export const CartProvider = ({ children }) => {
   // Computed values
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
   const cartSubtotal = cart.reduce((total, item) => {
-    const price = item.product.price - (item.product.discountPrice || 0);
+    const price = item.product.discountPrice > 0 ? item.product.discountPrice : item.product.price;
     return total + price * item.quantity;
   }, 0);
 

@@ -18,7 +18,7 @@ const CartItem = ({ item }) => {
   
   const { price, discountPrice, stock } = product;
   const hasDiscount = discountPrice > 0;
-  const currentPrice = hasDiscount ? price - discountPrice : price;
+  const currentPrice = hasDiscount ? discountPrice : price;
 
   const handleIncrement = () => {
     if (quantity < stock) {

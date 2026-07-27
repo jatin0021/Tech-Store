@@ -158,22 +158,34 @@ function populateItem(item, path) {
   const cloned = { ...item };
   if (path === "product") {
     const prodId = cloned.product && typeof cloned.product === "object" ? cloned.product._id : cloned.product;
-    cloned.product = collections.Product.find(p => p._id === prodId) || cloned.product;
+    const raw = collections.Product.find(p => p._id === prodId);
+    cloned.product = raw ? new (makeMockModel("Product"))(raw) : cloned.product;
   }
   if (path === "items.product") {
     if (cloned.items) {
       cloned.items = cloned.items.map(cartItem => {
         const prodId = cartItem.product && typeof cartItem.product === "object" ? cartItem.product._id : cartItem.product;
+        const raw = collections.Product.find(p => p._id === prodId);
         return {
           ...cartItem,
-          product: collections.Product.find(p => p._id === prodId) || cartItem.product
+          product: raw ? new (makeMockModel("Product"))(raw) : cartItem.product
         };
+      });
+    }
+  }
+  if (path === "products") {
+    if (cloned.products) {
+      cloned.products = cloned.products.map(product => {
+        const prodId = product && typeof product === "object" ? product._id : product;
+        const raw = collections.Product.find(p => p._id === prodId);
+        return raw ? new (makeMockModel("Product"))(raw) : product;
       });
     }
   }
   if (path === "user") {
     const userId = cloned.user && typeof cloned.user === "object" ? cloned.user._id : cloned.user;
-    cloned.user = collections.User.find(u => u._id === userId) || cloned.user;
+    const raw = collections.User.find(u => u._id === userId);
+    cloned.user = raw ? new (makeMockModel("User"))(raw) : cloned.user;
   }
   return cloned;
 }
@@ -187,10 +199,11 @@ class MockQuery {
   }
 
   populate(path) {
+    const pathString = typeof path === "object" ? path.path : path;
     if (Array.isArray(this.data)) {
-      this.data = this.data.map(item => populateItem(item, path));
+      this.data = this.data.map(item => populateItem(item, pathString));
     } else if (this.data) {
-      this.data = populateItem(this.data, path);
+      this.data = populateItem(this.data, pathString);
     }
     return this;
   }
@@ -227,7 +240,41 @@ class MockQuery {
     return this;
   }
 
-  then(onResolve, onReject) {
+  select(fields) {
+    if (!fields) return this;
+    if (typeof fields === "string") {
+      const fieldList = fields.split(" ");
+      const excludes = fieldList.filter(f => f.startsWith("-")).map(f => f.slice(1));
+      const includes = fieldList.filter(f => !f.startsWith("-"));
+      
+      const filterItem = (item) => {
+        if (!item) return item;
+        const copy = { ...item };
+        if (excludes.length > 0) {
+          excludes.forEach(field => delete copy[field]);
+        }
+        if (includes.length > 0) {
+          Object.keys(copy).forEach(key => {
+            if (!includes.includes(key) && key !== "_id") delete copy[key];
+          });
+        }
+        return copy;
+      };
+
+      if (Array.isArray(this.data)) {
+        this.data = this.data.map(filterItem);
+      } else if (this.data) {
+        this.data = filterItem(this.data);
+      }
+    }
+    return this;
+  }
+
+  lean() {
+    return this;
+  }
+
+  exec() {
     let resolvedData = this.data;
     if (resolvedData) {
       if (Array.isArray(resolvedData)) {
@@ -236,7 +283,11 @@ class MockQuery {
         resolvedData = this.instantiator(resolvedData);
       }
     }
-    return Promise.resolve(resolvedData).then(onResolve, onReject);
+    return Promise.resolve(resolvedData);
+  }
+
+  then(onResolve, onReject) {
+    return this.exec().then(onResolve, onReject);
   }
 }
 
@@ -278,6 +329,10 @@ export function makeMockModel(modelName) {
 
     async matchPassword(enteredPassword) {
       return await bcrypt.compare(enteredPassword, this.password);
+    }
+
+    toString() {
+      return this._id;
     }
   }
 

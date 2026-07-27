@@ -1,7 +1,16 @@
 import axios from "axios";
 
-// Standard development API endpoint
-const API_URL = "http://localhost:5000/api";
+const getDefaultApiUrl = () => {
+  if (typeof window === "undefined") {
+    return "http://localhost:5000/api";
+  }
+
+  const { protocol, hostname } = window.location;
+  return `${protocol}//${hostname}:5000/api`;
+};
+
+// Can be overridden with VITE_API_URL; otherwise use the same hostname on backend port 5000.
+const API_URL = import.meta.env.VITE_API_URL || getDefaultApiUrl();
 
 const apiClient = axios.create({
   baseURL: API_URL,
@@ -28,8 +37,15 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("tech_store_token");
+      localStorage.removeItem("tech_store_user");
+    }
     const message =
-      error.response?.data?.message || "An unexpected error occurred.";
+      error.response?.data?.message ||
+      (error.request
+        ? "Could not connect to the API server. Please make sure the backend is running."
+        : "An unexpected error occurred.");
     return Promise.reject(new Error(message));
   }
 );

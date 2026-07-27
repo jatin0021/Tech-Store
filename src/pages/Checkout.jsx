@@ -72,8 +72,12 @@ const Checkout = () => {
     const checkoutToast = toast.loading("Synching transaction authorization...");
     try {
       const orderPayload = {
+        items: cart.map((item) => ({
+          product: item.product._id || item.product.id,
+          quantity: item.quantity,
+        })),
         shippingAddress: shippingData,
-        discountRate: discountRate,
+        totalAmount: finalTotal,
       };
 
       const res = await apiClient.post("/orders", orderPayload);

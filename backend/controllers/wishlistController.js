@@ -37,7 +37,11 @@ export const addToWishlist = async (req, res) => {
       wishlist = new Wishlist({ user: req.user._id, products: [] });
     }
 
-    if (!wishlist.products.includes(productId)) {
+    const hasProduct = wishlist.products.some(
+      (product) => product.toString() === productId
+    );
+
+    if (!hasProduct) {
       wishlist.products.push(productId);
       await wishlist.save();
     }

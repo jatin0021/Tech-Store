@@ -49,10 +49,12 @@ const Wishlist = () => {
   };
 
   // Add Item to Cart and notify
-  const handleAddToCart = (product) => {
+  const handleAddToCart = async (product) => {
     if (product.stock > 0) {
-      addToCart(product, 1);
-      toast.success(`Added ${product.title} to your cart!`);
+      const added = await addToCart(product, 1);
+      if (added) {
+        toast.success(`Added ${product.title} to your cart!`);
+      }
     } else {
       toast.error("Sorry, this item is out of stock.");
     }

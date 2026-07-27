@@ -59,6 +59,21 @@
         "state": "as",
         "pincode": "123456"
       }
+    },
+    {
+      "_id": "mock_id_twecurk0p",
+      "createdAt": "2026-07-12T18:10:10.814Z",
+      "updatedAt": "2026-07-12T18:10:10.814Z",
+      "name": "abc",
+      "email": "abc@gmail.com",
+      "password": "$2a$10$KusDQe53BJyjiRmHiSqRJe8OVCoe2DhQSizFoKhY4KrM4tiOTIW.2",
+      "phone": "9999999999",
+      "address": {
+        "street": "asfsdf",
+        "city": "adfaf",
+        "state": "as",
+        "pincode": "99999"
+      }
     }
   ],
   "Category": [
@@ -527,8 +542,72 @@
       "createdAt": "2026-07-02T06:00:56.889Z"
     }
   ],
-  "Cart": [],
-  "Wishlist": [],
+  "Cart": [
+    {
+      "_id": "mock_id_sg4y2uov0",
+      "createdAt": "2026-07-02T10:07:23.764Z",
+      "updatedAt": "2026-07-02T10:07:23.764Z",
+      "user": "mock_id_rc9ug1ds5",
+      "items": [
+        {
+          "product": "prod_4",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "_id": "mock_id_82bafb5j0",
+      "createdAt": "2026-07-02T10:08:35.011Z",
+      "updatedAt": "2026-07-02T10:08:35.011Z",
+      "user": "user_customer",
+      "items": [
+        {
+          "product": "prod_8",
+          "quantity": 0
+        }
+      ]
+    },
+    {
+      "_id": "mock_id_k433rj47h",
+      "createdAt": "2026-07-12T18:10:11.147Z",
+      "updatedAt": "2026-07-12T18:10:11.148Z",
+      "user": "mock_id_twecurk0p",
+      "items": [
+        {
+          "product": "prod_4",
+          "quantity": 1
+        }
+      ]
+    }
+  ],
+  "Wishlist": [
+    {
+      "_id": "mock_id_njd99k6kz",
+      "createdAt": "2026-07-02T10:09:55.966Z",
+      "updatedAt": "2026-07-02T10:09:55.966Z",
+      "user": "mock_id_rc9ug1ds5",
+      "products": [
+        "prod_4",
+        "prod_5"
+      ]
+    },
+    {
+      "_id": "mock_id_qvxywgp8n",
+      "createdAt": "2026-07-02T10:17:57.362Z",
+      "updatedAt": "2026-07-02T10:17:57.362Z",
+      "user": "user_customer",
+      "products": []
+    },
+    {
+      "_id": "mock_id_xiwvt8ahj",
+      "createdAt": "2026-07-12T18:10:19.937Z",
+      "updatedAt": "2026-07-12T18:10:19.937Z",
+      "user": "mock_id_twecurk0p",
+      "products": [
+        "prod_4"
+      ]
+    }
+  ],
   "Order": [],
   "Review": []
 }

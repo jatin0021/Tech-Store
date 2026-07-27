@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import apiClient from "../api/api.js";
 import { useCart } from "../context/CartContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+import { PRODUCTS } from "../data/product.js";
 import Loading from "../components/Loading.jsx";
 import ProductCard from "../components/ProductCard.jsx";
 import toast from "react-hot-toast";
@@ -19,6 +20,46 @@ import {
   Send,
   MessageSquareHeart,
 } from "lucide-react";
+
+const CATEGORY_NAMES = {
+  laptops: "Laptops",
+  smartphones: "Smartphones",
+  audio: "Audio",
+  wearables: "Wearables",
+  gaming: "Gaming & PC",
+  smarthome: "Smart Home",
+};
+
+const getLocalProductSnapshot = (productId) => {
+  const normalizedId = String(productId || "").replace(/^prod_/, "");
+  const localProduct = PRODUCTS.find((item) => String(item.id) === normalizedId);
+
+  if (!localProduct) return null;
+
+  return {
+    _id: `prod_${localProduct.id}`,
+    title: localProduct.name,
+    description: localProduct.description,
+    price: localProduct.price,
+    discountPrice: localProduct.featured
+      ? Math.round(localProduct.price * 0.9 * 100) / 100
+      : 0,
+    images: [localProduct.image],
+    category: {
+      _id: `cat_${localProduct.category}`,
+      name: CATEGORY_NAMES[localProduct.category] || localProduct.category,
+      slug: localProduct.category,
+    },
+    brand: localProduct.name.split(" ")[0],
+    stock: localProduct.stock,
+    specifications: localProduct.specifications || {},
+    features: localProduct.features || [],
+    rating: localProduct.rating || 0,
+    reviewsCount: localProduct.reviewsCount || 0,
+    reviews: [],
+    featured: localProduct.featured || false,
+  };
+};
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -84,6 +125,25 @@ const ProductDetails = () => {
       })
       .catch((err) => {
         if (active) {
+          const fallbackProduct = getLocalProductSnapshot(id);
+
+          if (fallbackProduct) {
+            setProduct(fallbackProduct);
+            setActiveImage(fallbackProduct.images?.[0] || "");
+            setRelatedProducts(
+              PRODUCTS.filter(
+                (item) =>
+                  item.category === fallbackProduct.category.slug &&
+                  `prod_${item.id}` !== fallbackProduct._id
+              )
+                .slice(0, 3)
+                .map((item) => getLocalProductSnapshot(item.id))
+            );
+            trackRecentlyViewed(fallbackProduct);
+            setIsLoading(false);
+            return;
+          }
+
           setError(err.message || "Failed to locate product signature.");
           setIsLoading(false);
         }
@@ -146,10 +206,12 @@ const ProductDetails = () => {
   };
 
   // Cart Add click handler
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (product.stock > 0) {
-      addToCart(product, quantity);
-      toast.success(`Added ${quantity} unit(s) of ${product.title} to your cart!`);
+      const added = await addToCart(product, quantity);
+      if (added) {
+        toast.success(`Added ${quantity} unit(s) of ${product.title} to your cart!`);
+      }
     }
   };
 
